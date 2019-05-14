@@ -60,7 +60,7 @@ return service.NewProxy("Electra_Core", function(data)
     end
 
     if data then
-        server.Meta.LoadTime = (os.time() - data.Time)
+        server.Meta.LoadTime = (tick() - data.Time)
         warn('Electra', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
     else
         warn('Electra', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')

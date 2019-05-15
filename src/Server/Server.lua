@@ -1,3 +1,7 @@
+--[[
+    Electra Server
+]]
+
 local original = {
     script = script;
     warn = warn;
@@ -5,7 +9,7 @@ local original = {
     error = error;
 }
 
-local debugMode = false; --// Local variable because h
+local debugMode = false; --// Local variable because it needs to be accessed outside of function
 
 local print = function(...) original.print("[Electra]", ...) end
 local warn = function(...) original.warn("[Electra]", ...) end
@@ -17,6 +21,9 @@ local server = {Root = script.Parent.Parent;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
 
 return service.NewProxy("Electra_Core", function(data)
+    server.Deps = server.Root.Server.Dependencies;
+
+    server.Deps.ClientLoader.Disabled = true
 
     if data and data.DebugMode then
         debugMode = true

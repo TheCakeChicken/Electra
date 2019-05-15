@@ -61,6 +61,8 @@ local service; service = setmetatable({
     t[i] = t.Datamodel:GetService(i)
     return t[i]
   end;
+
+  __metatable = "ElectraServer_Service";
   
 })
 

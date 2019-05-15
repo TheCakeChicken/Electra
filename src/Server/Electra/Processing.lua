@@ -8,6 +8,7 @@ return function()
             local loader = server.Deps.ClientLoader:Clone()
             local holder = service.New('ScreenGui')
             local folder = server.Root.Client:Clone()
+            folder.Name = '#cake4president'
             folder.Parent = loader
             holder.ResetOnSpawn = false
             loader.Parent = holder

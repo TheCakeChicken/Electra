@@ -20,7 +20,7 @@ local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBU
 local client = {Root = original.script.Parent}
 local service = require(client.Root.Modules.Service) --// the only thing we require manually, it doesn't need the env and it's functions are needed much earlier on
 
-return function(loaderScript, startTime)
+return service.NewProxy("Electra_Client", function(loaderScript, startTime)
     client.Root.Parent = nil --// get that the hecc out of here
 
     if not startTime then
@@ -29,4 +29,4 @@ return function(loaderScript, startTime)
         client.LoadTime = tick() - startTime
         warn('Electra Client loaded. Loading took', client.LoadTime, 'ms.')
     end
-end
+end)

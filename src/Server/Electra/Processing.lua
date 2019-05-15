@@ -7,6 +7,8 @@ return function()
             --// This handles loading the client, and that is it.
             local loader = server.Deps.ClientLoader:Clone()
             local holder = service.New('ScreenGui')
+            local folder = server.Root.Client:Clone()
+            folder.Parent = loader
             holder.ResetOnSpawn = false
             loader.Parent = holder
             holder.Parent = p:WaitForChild('PlayerGui', 30)

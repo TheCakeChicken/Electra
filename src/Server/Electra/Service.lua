@@ -3,6 +3,13 @@ local service; service = setmetatable({
   Datamodel = game;
   Heartbeat = game:GetService('RunService').Stepped;
   Loops = {};
+  Instances = {};
+
+  New = function(...)
+    local obj = Instance.new(...)
+    table.insert(service.Instances, obj)
+    return obj
+  end;
   
   NewProxy = function(name, func)
     assert(name and func, "")

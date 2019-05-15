@@ -30,7 +30,7 @@ return service.NewProxy("Electra_Core", function(data)
     end
 
     server.LoadOrder = {
-            --"Electra/Processing";
+            "Electra/Processing";
             --"Electra/Events";
             --"Electra/DataStore";
             --"Electra/Core";
@@ -66,6 +66,8 @@ return service.NewProxy("Electra_Core", function(data)
             error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
         end;
     end
+
+    service.Players.PlayerAdded:Connect(server.Processing.LoadClient)
 
     if data then
         server.Meta.LoadTime = (tick() - data.Time)

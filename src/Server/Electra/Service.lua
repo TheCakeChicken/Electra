@@ -4,6 +4,7 @@ local service; service = setmetatable({
   Heartbeat = game:GetService('RunService').Stepped;
   Loops = {};
   Instances = {};
+  EventStorage = {};
 
   New = function(...)
     local obj = Instance.new(...)
@@ -12,7 +13,7 @@ local service; service = setmetatable({
   end;
   
   NewProxy = function(name, func)
-    assert(name and func, "")
+    assert(name and func, "service.NewProxy must be called with a name and function argument")
     local proxy = newproxy(true)
     local meta = getmetatable(proxy)
     
@@ -52,6 +53,55 @@ local service; service = setmetatable({
       local pattern = string.format("([^%s]+)", sep)
       string.gsub(s, pattern, function(c) t[#t + 1] = c end)
       return t
+    end;
+  };
+
+  Events = {
+    Create = function(name)
+      assert(name, "service.Events.Create must be called with a name")
+      service.EventStorage[name] = {
+        Event = service.New('BindableEvent');
+        HookedFunctions = {};
+      }
+
+      service.EventStorage[name].Event.Event:Connect(function(...)
+        for _,func in next,service.EventStorage[name].HookedFunctions do
+          func(...)
+        end
+      end)
+
+      return service.EventStorage[name].Event
+    end;
+
+    Get = function(name)
+      assert(name, "service.Events.Get must be called with a name")
+      if service.EventStorage[name] and service.EventStorage[name].Event then return service.EventStorage[name].Event end
+      service.EventStorage[name] = {
+        Event = service.New('BindableEvent');
+        HookedFunctions = {};
+      }
+
+      service.EventStorage[name].Event.Event:Connect(function(...)
+        for _,func in next,service.EventStorage[name].HookedFunctions do
+          func(...)
+        end
+      end)
+
+      return service.EventStorage[name].Event
+    end;
+
+    Hook = function(name, func)
+      assert(name, "service.Events.Hook must be called with a name")
+      if not service.EventStorage[name] then return error('Event with name', name, 'not found. Cannot hook.') end
+
+      table.insert(service.EventStorage[name].HookedFunctions, func)
+    end;
+
+    Fire = function(name, ...)
+      assert(name, "service.Events.Fire must be called with a name")
+      if not service.EventStorage[name] then return error('Event with name', name, 'not found. Cannot fire.') end
+
+      service.EventStorage[name].Event:Fire(...)
     end;
   };
 

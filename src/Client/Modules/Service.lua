@@ -13,7 +13,7 @@ local service; service = setmetatable({
     end;
     
     NewProxy = function(name, func)
-      assert(name and func, "")
+      assert(name and func, "service.NewProxy must be called with a name and function argument")
       local proxy = newproxy(true)
       local meta = getmetatable(proxy)
       

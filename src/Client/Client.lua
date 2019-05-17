@@ -26,7 +26,7 @@ return service.NewProxy("Electra_Client", function(loaderScript, startTime)
     if not startTime then
         client.Player:Kick('Error while loading') --// something's tried to call it differently as the loader passes in startTime, that's suspicious.
     else
-        client.LoadTime = tick() - startTime
+        client.LoadTime = math.ceil(tick() - startTime)
         warn('Electra Client loaded. Loading took', client.LoadTime, 'ms.')
     end
 end)

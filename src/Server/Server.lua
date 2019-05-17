@@ -67,7 +67,16 @@ return service.NewProxy("Electra_Core", function(data)
         end;
     end
 
-    service.Players.PlayerAdded:Connect(server.Processing.LoadClient)
+    --// Setup internal events
+    service.Events.Create('LoadClient')
+    service.Events.Create('PlayerAdded')
+    service.Events.Create('CharacterAdded')
+    service.Events.Hook('LoadClient', server.Processing.LoadClient)
+    service.Events.Hook('PlayerAdded', server.Processing.PlayerAdded)
+    service.Events.Hook('CharacterAdded', server.Processing.CharacterAdded)
+
+    --// Connect to Roblox Service events that we need
+    service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
 
     if data then
         server.Meta.LoadTime = (tick() - data.Time)

@@ -12,14 +12,18 @@ local service; service = setmetatable({
     return obj
   end;
   
-  NewProxy = function(name, func)
-    assert(name and func, "service.NewProxy must be called with a name and function argument")
+  NewProxy = function(name, tab, func)
+    assert(name, "service.NewProxy must be called with a name argument")
     local proxy = newproxy(true)
     local meta = getmetatable(proxy)
     
     meta.__metatable = tostring(name) .. "_ElectraServer"
-    meta.__call = function(tab, ...) return func(...) end
+    if func ~= nil then meta.__call = function(tab, ...) return func(...) end end
     meta.__index = function(t, i) return "Electra_Proxy" end
+
+    for i,v in next,tab do
+      meta[i] = v;
+    end
 
     return proxy
   end;

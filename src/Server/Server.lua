@@ -20,7 +20,7 @@ local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBU
 local server = {Root = script.Parent.Parent;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
 
-return service.NewProxy("Electra_Core", function(data)
+return service.NewProxy("Electra_Core", {}, function(data)
     server.Deps = server.Root.Server.Dependencies;
 
     server.Deps.ClientLoader.Disabled = true
@@ -29,16 +29,15 @@ return service.NewProxy("Electra_Core", function(data)
         debugMode = true
     end
 
+    server.Settings = data.Settings
+
     server.LoadOrder = {
-            "Electra/Processing";
-            --"Electra/Events";
-            --"Electra/DataStore";
-            --"Electra/Core";
-            --"Electra/AE";
-            "Optional/API";
-            --"Dependencies/DefaultSettings";
-            "Dependencies/Meta";
-            --"Dependencies/Credits";
+        "Electra/Processing";
+        "Electra/Logs";
+        "Electra/Remote";
+        "Dependencies/Meta";
+        "Optional/TrelloAPI";
+        "Optional/API";
     }
         
     for _,ModuleName in next,server.LoadOrder do
@@ -66,6 +65,9 @@ return service.NewProxy("Electra_Core", function(data)
             error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
         end;
     end
+
+    --// Setup remote
+    server.Remote.Function = service.New('RemoteFunction')
 
     --// Setup internal events
     service.Events.Create('LoadClient')

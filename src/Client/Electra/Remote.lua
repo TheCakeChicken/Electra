@@ -1,11 +1,8 @@
-server = nil
+client = nil
 service = nil
 
 return function()
-    server.Remote = {
+    client.Remote = {
         Function = nil;
-        Keys = {};
-
-        
     }
 end

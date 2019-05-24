@@ -109,6 +109,20 @@ local service; service = setmetatable({
     end;
   };
 
+  GenerateRandom = function(length)
+    length = length or 10
+    local toRet = ""
+    for i=1,length do
+        toRet = toRet .. string.format("%x", math.random(0, 255))
+    end
+    return toRet
+  end;
+
+  Disconnect = function(p, msg)
+    msg = msg or "No kick reason specified"
+    p:Kick("\nElectra - Disconnected from server:\n" .. msg)
+  end;
+
 },{
 
   __index = function(t, i)

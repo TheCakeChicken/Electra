@@ -17,7 +17,7 @@ local error = function(...) original.warn("[Electra : ERROR]", ...) end
 local debugPrint = function(...) if debugMode then original.print("[Electra : DEBUG]", ...) end end
 local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBUG]", ...) end end
 
-local server = {Root = script.Parent.Parent;}
+local server = {Root = script.Parent.Parent; DebugMode = false;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
 
 return service.NewProxy("Electra_Core", {}, function(data)
@@ -27,6 +27,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
 
     if data and data.DebugMode then
         debugMode = true
+        server.DebugMode = true
     end
 
     server.Settings = data.Settings
@@ -68,6 +69,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
 
     --// Setup remote
     server.Remote.Function = service.New('RemoteFunction')
+    server.Remote.Function.Name = service.GenerateRandom(50)
 
     --// Setup internal events
     service.Events.Create('LoadClient')

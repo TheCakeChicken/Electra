@@ -26,15 +26,18 @@ return function()
 
         PlayerAdded = function(plr)
             server.Processing.ReadyPlayers[plr.UserId] = true
-
-            plr.CharacterAdded:Connect(function(char) service.Event.Fire('CharacterAdded', plr, char) end)
+            warn('Loading player', tostring(plr))
+            plr.CharacterAdded:Connect(function(char) service.Events.Fire('CharacterAdded', plr, char) end)
             repeat wait() until plr.Character
-            service.Event.Fire('CharacterAdded', plr, plr.Character)
-
-            server.Remote.Send('Print', "Test print from server")
+            service.Events.Fire('CharacterAdded', plr, plr.Character)
         end;
 
         CharacterAdded = function(plr, char)
+        end;
+
+        PlayerRemoving = function(plr)
+            server.Processing.ReadyPlayers[plr.UserId] = nil
+            server.Remote.Keys[plr.UserId] = nil
         end;
     }
 end

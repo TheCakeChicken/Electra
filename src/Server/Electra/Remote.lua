@@ -19,10 +19,15 @@ return function()
 
         Functions = {
             ClientReady = function(plr)
+                if server.Remote.Keys[plr.UserId] then service.Disconnect(plr, "Attempted to change key") return end
                 server.Remote.Keys[plr.UserId] = service.GenerateRandom(30)
                 service.Events.Fire('PlayerAdded', plr)
                 return server.Remote.Keys[plr.UserId]
             end;
+
+            Echo = function(plr, ...)
+                return ...
+            end
         };
     }
 end

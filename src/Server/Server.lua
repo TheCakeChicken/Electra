@@ -36,6 +36,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         "Electra/Processing";
         "Electra/Logs";
         "Electra/Remote";
+        "Electra/Functions";
         "Dependencies/Meta";
         "Optional/TrelloAPI";
         "Optional/API";
@@ -76,13 +77,18 @@ return service.NewProxy("Electra_Core", {}, function(data)
     --// Setup internal events
     service.Events.Create('LoadClient')
     service.Events.Create('PlayerAdded')
+    service.Events.Create('PlayerRemoving')
     service.Events.Create('CharacterAdded')
     service.Events.Hook('LoadClient', server.Processing.LoadClient)
     service.Events.Hook('PlayerAdded', server.Processing.PlayerAdded)
+    service.Events.Hook('PlayerRemoving', server.Processing.PlayerRemoving)
     service.Events.Hook('CharacterAdded', server.Processing.CharacterAdded)
 
     --// Connect to Roblox Service events that we need
     service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
+    service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
+
+    service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients)
 
     if data then
         server.Meta.LoadTime = (tick() - data.Time)

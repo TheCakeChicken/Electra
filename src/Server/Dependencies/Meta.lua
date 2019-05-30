@@ -4,7 +4,7 @@ service = nil
 return function()
     server.Meta = {
         Branch = "Alpha";
-        Version = "a0.0.1";
+        Version = "a0.1.0";
         LoadTime = nil;
     }
 end

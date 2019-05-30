@@ -17,13 +17,13 @@ local error = function(...) original.warn("[Electra : ERROR]", ...) end
 local debugPrint = function(...) if debugMode then original.print("[Electra : DEBUG]", ...) end end
 local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBUG]", ...) end end
 
-local client = {Root = original.script.Parent;}
-local service = require(client.Root.Modules.Service) --// the only thing we require manually, it doesn't need the env and it's functions are needed much earlier on
+local client = {Root = original.script.Parent; DebugMode = false;}
+local service = require(client.Root.Electra.Service) --// the only thing we require manually, it doesn't need the env and it's functions are needed much earlier on
 
 return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
     client.Root.Parent = nil --// get that the hecc out of here
 
-    local ERF = loaderScript:FindFirstChild('RF')
+    local ERF = loaderScript:FindFirstChild('ERF')
     if not ERF then service.Player:Kick('\nElectra - Disconnected from server:\nFailure to obtain all required objects for Electra Client to load successfully.') end
 
     local DM = loaderScript:FindFirstChild('DM')
@@ -66,6 +66,10 @@ return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
     ERF.Value = nil
     ERF:Destroy()
     DM:Destroy()
+
+    client.Remote.Function.OnClientInvoke = client.Remote.Receive
+
+    client.Remote.Key = client.Remote.Send('ClientReady')
 
     if not startTime then
         client.Player:Kick('Error while loading') --// something's tried to call it differently as the loader passes in startTime, that's suspicious.

@@ -70,6 +70,8 @@ return service.NewProxy("Electra_Core", {}, function(data)
     --// Setup remote
     server.Remote.Function = service.New('RemoteFunction')
     server.Remote.Function.Name = service.GenerateRandom(50)
+    server.Remote.Function.Parent = service.ReplicatedStorage
+    server.Remote.Function.OnServerInvoke = server.Remote.Receive
 
     --// Setup internal events
     service.Events.Create('LoadClient')

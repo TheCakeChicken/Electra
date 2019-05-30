@@ -25,9 +25,13 @@ return function()
         end;
 
         PlayerAdded = function(plr)
+            server.Processing.ReadyPlayers[plr.UserId] = true
+
             plr.CharacterAdded:Connect(function(char) service.Event.Fire('CharacterAdded', plr, char) end)
             repeat wait() until plr.Character
             service.Event.Fire('CharacterAdded', plr, plr.Character)
+
+            server.Remote.Send('Print', "Test print from server")
         end;
 
         CharacterAdded = function(plr, char)

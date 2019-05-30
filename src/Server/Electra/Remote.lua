@@ -6,6 +6,23 @@ return function()
         Function = nil;
         Keys = {};
 
-        
+        Send = function(plr, ...)
+            return server.Remote.Function:InvokeClient(plr, ...)
+        end;
+
+        Receive = function(plr, key, cmd, ...)
+            if cmd ~= "ClientReady" and server.Remote.Keys[plr.UserId] ~= key then service.Disconnect(plr, "Attempted to call remote") return false end
+            local func = server.Remote.Functions[cmd]
+            if not func or typeof(func) ~= 'function' then return false end
+            return func(plr, ...)
+        end;
+
+        Functions = {
+            ClientReady = function(plr)
+                server.Remote.Keys[plr.UserId] = service.GenerateRandom(30)
+                service.Events.Fire('PlayerAdded', plr)
+                return server.Remote.Keys[plr.UserId]
+            end;
+        };
     }
 end

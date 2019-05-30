@@ -2,6 +2,7 @@ local service; service = setmetatable({
 
   Datamodel = game;
   Heartbeat = game:GetService('RunService').Stepped;
+  Player = game:GetService('Players').LocalPlayer;
   Loops = {};
   Instances = {};
   EventStorage = {};

@@ -17,6 +17,10 @@ return function()
             return func(plr, ...)
         end;
 
+        Detected = function(p,args)
+            server.AE.Action.Detected(p,args[1],args[2])
+        end;
+
         Functions = {
             ClientReady = function(plr)
                 if server.Remote.Keys[plr.UserId] then service.Disconnect(plr, "Attempted to change key") return end

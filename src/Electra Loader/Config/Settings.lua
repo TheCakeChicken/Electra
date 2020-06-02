@@ -1,5 +1,7 @@
 local settings = {}
 
+settings.Prefix = ";"
+
 settings.DiscordLogging = false
 settings.DiscordWebhookID = ""
 settings.DiscordWebhookToken = "" 

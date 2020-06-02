@@ -11,11 +11,11 @@ return function()
 
         server.Discord = {
 
-            Log = function(Player, Info) 
+            Log = function(Player, Action, Info) 
                 local info = {}
                 info.embeds = {{}}
                 info.embeds[1].title = 'Electra log'
-                info.embeds[1].fields = {{name = 'Player',value = tostring(Player)},{name = 'Info',value = tostring(Info)}}
+                info.embeds[1].fields = {{name = 'Player',value = tostring(Player)},{name = 'Action',value = tostring(Action)},{name = 'Info',value = tostring(Info)}}
                 server.Functions.PostEmbed(info)
             end;
             

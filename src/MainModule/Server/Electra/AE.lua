@@ -1,8 +1,22 @@
 server = nil
 service = nil
 
-return function() --// Will add "action" things eventually so I can pass them over to better log things
+return function()
     server.AE = {
+
+        Action = {
+
+            function Detected = function(Player, Action, Info)
+                if Player then
+                  if Action:lower() == 'kick' then
+                    service.Disconnect(Player, "Exploiting.")
+                    if settings.DiscordLogging = true then
+                      server.Discord.Log(Player, Action, Info)
+                    end
+                  end
+                end
+
+        }
 
         FakeRemotes = function()
 
@@ -12,9 +26,8 @@ return function() --// Will add "action" things eventually so I can pass them ov
         
         FakeRemote.Name = "Electra_Data"
         
-        local Detected = function(Player) --// Will setup a better exploit processing system later
-            server.Discord.Log(Player,"Exploiting.")
-            service.Disconnect(Player, "Exploiting.")
+        local Detected = function(Player) 
+           server.AE.Action.Detected(Player, "Kick", Info)
         end
 
         FakeRemote.OnServerEvent:Connect(Detected)

@@ -5,7 +5,7 @@ local detections = {"exploit","reziv admin"}
 return function()
     client.AE = {
 
-        --// Client log detection (Need to remember to log it on the server)
+        --// Client log detection (will use remotes for communication later)
 
         spawn(function()
             while wait(5) do

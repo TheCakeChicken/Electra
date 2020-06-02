@@ -107,4 +107,6 @@ return service.NewProxy("Electra_Core", {}, function(data)
     else
         warn('Electra server', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
     end
+
+    return "LOADED"
 end)

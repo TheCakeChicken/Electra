@@ -25,6 +25,13 @@ return function()
             end
         end;
 
+        PostEmbed = function(data)
+	        local WebhookLink = "https://discord.com/api/webhooks/"..server.Settings.DiscordWebhookID.."/"..server.Settings.DiscordWebhookToken
+            local HttpService = game:GetService("HttpService")
+            local encoded = HttpService:JSONEncode(data)
+            HttpService:PostAsync(WebhookLink, encoded)
+        end;
+
         FindUser = function(Input)
                 if Input == "All" then
                       for i, v in pairs(game:GetService("Players"):GetChildren()) do

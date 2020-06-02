@@ -32,6 +32,8 @@ return service.NewProxy("Electra_Core", {}, function(data)
 
     if data then
         server.Settings = data.Settings
+    else 
+        server.Settings = server.Deps.DefaultSettings
     end
 
     server.LoadOrder = {
@@ -43,6 +45,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         "Dependencies/Meta";
         "Optional/TrelloAPI";
         "Optional/API";
+        "Optional/DiscordAPI";
     }
         
     for _,ModuleName in next,server.LoadOrder do

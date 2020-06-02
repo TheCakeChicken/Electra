@@ -12,7 +12,8 @@ return function() --// Will add "action" things eventually so I can pass them ov
         
         FakeRemote.Name = "Electra_Data"
         
-        local Detected = function(Player)
+        local Detected = function(Player) --// Will setup a better exploit processing system later
+            server.Discord.Log(Player,"Exploiting.")
             service.Disconnect(Player, "Exploiting.")
         end
 

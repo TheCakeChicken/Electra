@@ -1,7 +1,7 @@
 server = nil
 service = nil
 
-return function()
+return function() --// Will add "action" things eventually so I can pass them over to better log things
     server.AE = {
 
         FakeRemotes = function()

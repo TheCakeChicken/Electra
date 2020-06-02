@@ -88,7 +88,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
     service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
     service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
 
-    service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients)
+   --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients)
 
     if data then
         server.Meta.LoadTime = (tick() - data.Time)

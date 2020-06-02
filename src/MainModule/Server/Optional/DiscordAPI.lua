@@ -12,7 +12,7 @@ return function()
         server.Discord = {
 
             Log = function(Player, Action, Info) 
-                if server.Settings.DiscordLogging = false or DiscordWebhookID = "" or DiscordWebhookToken = "" then 
+                if server.Settings.DiscordLogging == false or server.Settings.DiscordWebhookID == "" or server.Settings.DiscordWebhookToken == "" then 
                     warn("Discord log not enabled, or it's set to true and no token or ID is being provided.")
                 end
                 local info = {}

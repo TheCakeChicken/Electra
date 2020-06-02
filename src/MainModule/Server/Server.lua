@@ -95,6 +95,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
     service.Events.Hook('CharacterAdded', server.Processing.CharacterAdded)
 
     --// Connect to Roblox Service events that we need
+    service.Players.PlayerAdded:Connect(function(p) server.Functions.CheckBan(p) end) --// Checks if the user is banned and disconnects them
     service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
     service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
 

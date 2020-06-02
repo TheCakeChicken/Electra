@@ -48,5 +48,16 @@ return function()
                 end
             end;
 
+            CheckBan = function(Player)
+                if next(server.Settings.Banned) ~= nil then
+                    for i, v in pairs(server.Settings.Banned) do
+                        if Player.UserId or Player.Name == v then
+                            service.Disconnect(Player, server.Settings.BanMessage)
+                        end
+                    end
+                end
+            end
+            
+
     }
 end

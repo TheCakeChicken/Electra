@@ -24,6 +24,15 @@ return function()
             Print = function(...)
                 print(...)
             end;
+
+            ChatNotify = function(Message)
+				Pcall(function() 
+					game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+                    Text = Message, 
+					Color = Color3.new(255, 0 ,0)
+					}) 
+				end)
+			end;
         };
     }
 end

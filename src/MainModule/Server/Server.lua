@@ -39,6 +39,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         "Electra/Logs";
         "Electra/Remote";
         "Electra/Functions";
+        "Electra/AE";
         "Dependencies/Meta";
         "Optional/TrelloAPI";
         "Optional/API";
@@ -73,8 +74,11 @@ return service.NewProxy("Electra_Core", {}, function(data)
     --// Setup remote
     server.Remote.Function = service.New('RemoteFunction')
     server.Remote.Function.Name = service.GenerateRandom(50)
-    server.Remote.Function.Parent = service.ReplicatedStorage
+    server.Remote.Function.Parent = service.JointsService
     server.Remote.Function.OnServerInvoke = server.Remote.Receive
+
+    --// Fake remote to confuse exploiters
+    server.AE.FakeRemotes()
 
     --// Setup internal events
     service.Events.Create('LoadClient')
@@ -90,10 +94,10 @@ return service.NewProxy("Electra_Core", {}, function(data)
     service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
     service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
 
-   --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients)
+   --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients) --// Check always fails right now
 
     if data then
-        server.Meta.LoadTime = (tick() - data.Time)
+        server.Meta.LoadTime = math.ceil(tick() - data.Time)
         warn('Electra', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
     else
         warn('Electra', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')

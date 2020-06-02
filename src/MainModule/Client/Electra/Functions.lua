@@ -3,6 +3,7 @@ service = nil
 
 return function()
     client.Functions = {
+        
         Crash = function()
             while true do
                 while true do
@@ -26,5 +27,6 @@ return function()
                 end
             end
         end;
+        
     }
 end

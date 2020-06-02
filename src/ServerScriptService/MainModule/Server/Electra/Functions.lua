@@ -24,5 +24,22 @@ return function()
                 end
             end
         end;
+
+        FindUser = function(Input)
+                if Input == "All" then
+                      for i, v in pairs(game:GetService("Players"):GetChildren()) do
+                            return v
+                    end
+                else
+                    for i, v in pairs(game:GetService("Players"):GetChildren()) do
+                        if v.UserId or v.Name == tonumber(Input) then
+                            return v
+                        end
+                    end
+                    
+                    warn("Player: "..tostring(Input).." Not Found")
+                end
+            end;
+
     }
 end

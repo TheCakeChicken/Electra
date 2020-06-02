@@ -33,6 +33,8 @@ return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
 
     client.LoadOrder = {
         "Electra/Remote";
+        "Electra/Functions";
+        "Electra/AE";
     }
         
     for _,ModuleName in next,client.LoadOrder do

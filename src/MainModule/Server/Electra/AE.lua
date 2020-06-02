@@ -6,17 +6,19 @@ return function()
 
         Action = {
 
-            function Detected = function(Player, Action, Info)
+            Detected = function(Player, Action, Info)
                 if Player then
                   if Action:lower() == 'kick' then
                     service.Disconnect(Player, "Exploiting.")
-                    if settings.DiscordLogging = true then
+                    warn("Player: "..Player.Name.." was removed for: "..Info)
+                    if server.Settings.DiscordLogging then
                       server.Discord.Log(Player, Action, Info)
                     end
                   end
                 end
+              end;
 
-        }
+        };
 
         FakeRemotes = function()
 
@@ -26,13 +28,11 @@ return function()
         
         FakeRemote.Name = "Electra_Data"
         
-        local Detected = function(Player) 
-           server.AE.Action.Detected(Player, "Kick", Info)
+        local Trip = function(Player) 
+           server.AE.Action.Detected(Player, "Kick", "Firing a honeypot.")
         end
 
-        FakeRemote.OnServerEvent:Connect(Detected)
-
-        end
-        
-    }
+        FakeRemote.OnServerEvent:Connect(Trip)
+       end
+}
 end

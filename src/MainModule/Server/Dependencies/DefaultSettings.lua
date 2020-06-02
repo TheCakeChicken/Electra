@@ -1,6 +1,6 @@
 local settings = {}
 
-settings.DiscordLogging = true
+settings.DiscordLogging = false
 settings.DiscordWebhookID = ""
 settings.DiscordWebhookToken = "" 
 

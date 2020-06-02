@@ -30,7 +30,9 @@ return service.NewProxy("Electra_Core", {}, function(data)
         server.DebugMode = true
     end
 
-    server.Settings = data.Settings
+    if data then
+        server.Settings = data.Settings
+    end
 
     server.LoadOrder = {
         "Electra/Processing";

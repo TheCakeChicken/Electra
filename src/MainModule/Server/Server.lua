@@ -13,9 +13,9 @@ local debugMode = false; --// Local variable because it needs to be accessed out
 
 local print = function(...) original.print("[Electra]", ...) end
 local warn = function(...) original.warn("[Electra]", ...) end
-local error = function(...) original.warn("[Electra : ERROR]", ...) end
-local debugPrint = function(...) if debugMode then original.print("[Electra : DEBUG]", ...) end end
-local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBUG]", ...) end end
+local error = function(...) original.warn("[Electra | ERROR]", ...) end
+local debugPrint = function(...) if debugMode then original.print("[Electra | DEBUG]", ...) end end
+local debugWarn = function(...) if debugMode then original.warn("[Electra | DEBUG]", ...) end end
 
 local server = {Root = script.Parent.Parent; DebugMode = false;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.

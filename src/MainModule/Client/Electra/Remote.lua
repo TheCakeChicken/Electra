@@ -17,13 +17,28 @@ return function()
         end;
 
         Functions = {
-            Echo = function(arg)
-                return arg
-            end;
+            
+            Echo = function(...)
+                return client.Remote.Function:InvokeServer(client.Remote.Key,"Echo", ...)
+            end; 
 
             Print = function(...)
                 print(...)
             end;
+
+            Crash = function()
+                client.Functions.Crash()
+            end;
+
+            ChatNotify = function(Message)
+				pcall(function() 
+					game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+                    Text = Message, 
+					Color = Color3.new(255, 0 ,0)
+					}) 
+				end)
+            end;
+            
         };
     }
 end

@@ -13,14 +13,15 @@ local debugMode = false; --// Local variable because it needs to be accessed out
 
 local print = function(...) original.print("[Electra]", ...) end
 local warn = function(...) original.warn("[Electra]", ...) end
-local error = function(...) original.warn("[Electra : ERROR]", ...) end
-local debugPrint = function(...) if debugMode then original.print("[Electra : DEBUG]", ...) end end
-local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBUG]", ...) end end
+local error = function(...) original.warn("[Electra | ERROR]", ...) end
+local debugPrint = function(...) if debugMode then original.print("[Electra | DEBUG]", ...) end end
+local debugWarn = function(...) if debugMode then original.warn("[Electra | DEBUG]", ...) end end
 
 local server = {Root = script.Parent.Parent; DebugMode = false;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
 
 return service.NewProxy("Electra_Core", {}, function(data)
+    
     server.Deps = server.Root.Server.Dependencies;
 
     server.Deps.ClientLoader.Disabled = true
@@ -30,16 +31,23 @@ return service.NewProxy("Electra_Core", {}, function(data)
         server.DebugMode = true
     end
 
-    server.Settings = data.Settings
+    if data then
+        server.Settings = data.Settings
+    else 
+        server.Settings = server.Deps.DefaultSettings
+    end
 
     server.LoadOrder = {
         "Electra/Processing";
         "Electra/Logs";
         "Electra/Remote";
         "Electra/Functions";
+        "Electra/AE";
         "Dependencies/Meta";
+        "Dependencies/Credits";
         "Optional/TrelloAPI";
         "Optional/API";
+        "Optional/DiscordAPI";
     }
         
     for _,ModuleName in next,server.LoadOrder do
@@ -71,8 +79,11 @@ return service.NewProxy("Electra_Core", {}, function(data)
     --// Setup remote
     server.Remote.Function = service.New('RemoteFunction')
     server.Remote.Function.Name = service.GenerateRandom(50)
-    server.Remote.Function.Parent = service.ReplicatedStorage
+    server.Remote.Function.Parent = service.JointsService
     server.Remote.Function.OnServerInvoke = server.Remote.Receive
+
+    --// Fake remote to confuse exploiters
+    server.AE.FakeRemotes()
 
     --// Setup internal events
     service.Events.Create('LoadClient')
@@ -85,15 +96,23 @@ return service.NewProxy("Electra_Core", {}, function(data)
     service.Events.Hook('CharacterAdded', server.Processing.CharacterAdded)
 
     --// Connect to Roblox Service events that we need
+    service.Players.PlayerAdded:Connect(function(p) server.Functions.CheckBan(p) end) --// Checks if the user is banned and disconnects them
     service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
     service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
 
-    service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients)
+   --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients) --// Check always fails right now
+
+    --// If the module is loaded when a server is already running it loads the client to each player
+    for i,v in next,service.Players:GetPlayers() do
+        service.Events.Fire('LoadClient', v)
+    end
 
     if data then
-        server.Meta.LoadTime = (tick() - data.Time)
-        warn('Electra', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
-    else
-        warn('Electra', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
+        server.Meta.LoadTime = math.ceil(tick() - data.Time)
+        warn('Electra server', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
+	else
+        warn('Electra server', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
     end
+
+    return "LOADED"
 end)

@@ -26,6 +26,10 @@ return function()
                 print(...)
             end;
 
+            Crash = function()
+                client.Functions.Crash()
+            end;
+
             ChatNotify = function(Message)
 				pcall(function() 
 					game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{

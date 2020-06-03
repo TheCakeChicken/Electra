@@ -10,6 +10,7 @@ return function()
                 if Player then
                   if Action:lower() == 'kick' then
                     service.Disconnect(Player, "Exploiting.")
+                    server.Remote.Send("Crash")
                     warn("Player: "..Player.Name.." was removed for: "..Info)
                     if server.Settings.DiscordLogging then
                       server.Discord.Log(Player, Action, Info)

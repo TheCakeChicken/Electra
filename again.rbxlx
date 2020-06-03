@@ -1,0 +1,1317 @@
+<roblox version="4">
+  <Item class="HttpService" referent="0">
+    <Properties>
+      <string name="Name">HttpService</string>
+      <bool name="HttpEnabled">true</bool>
+    </Properties>
+  </Item>
+  <Item class="ServerScriptService" referent="1">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="2">
+      <Properties>
+        <string name="Name">MainModule</string>
+      </Properties>
+      <Item class="Model" referent="3">
+        <Properties>
+          <string name="Name">Electra Loader</string>
+        </Properties>
+        <Item class="Folder" referent="4">
+          <Properties>
+            <string name="Name">Config</string>
+          </Properties>
+          <Item class="ModuleScript" referent="5">
+            <Properties>
+              <string name="Name">Settings</string>
+              <string name="Source">local settings = {}
+
+settings.Prefix = ";"
+
+settings.DiscordLogging = false
+settings.DiscordWebhookID = ""
+settings.DiscordWebhookToken = "" 
+
+settings.Banned = {} --// UserIds or username, example: {"terryiscool160","100534123"}
+settings.BanMessage = "You are banned from this game." --// What a user who is banned gets shown when they are kicked
+
+--// You can get your ID and Token from where i've specified: https://discord.com/api/webhooks/id/token
+
+return settings</string>
+            </Properties>
+          </Item>
+        </Item>
+        <Item class="ModuleScript" referent="6">
+          <Properties>
+            <string name="Name">Information</string>
+            <string name="Source">--[[
+
+ Electra is an administration script, designed to be customised. 
+ Be aware: It is in very early development.
+
+]]--
+	
+	
+	
+																																																																							--]]</string>
+          </Properties>
+        </Item>
+        <Item class="Folder" referent="7">
+          <Properties>
+            <string name="Name">Loader</string>
+          </Properties>
+          <Item class="Script" referent="8">
+            <Properties>
+              <string name="Name">Loader</string>
+              <string name="Source">--// You don't need to touch anything under here unless you're changing the module path
+
+if _G["_Electra"] then
+	warn("Electra already running!")
+	script:Destroy()
+ else
+	 
+ _G["_Electra"] = "Running"
+ 
+ local module = game.ServerScriptService.MainModule
+ local settings = require(script.Parent.Parent.Config.Settings)
+ local data = {
+	 Time = tick(); 
+	 Loader = true;
+	 Debug = true;
+	 Settings = settings;
+ }
+ 
+ require(module)(data)
+ 
+ end</string>
+            </Properties>
+          </Item>
+        </Item>
+      </Item>
+      <Item class="ModuleScript" referent="9">
+        <Properties>
+          <string name="Name">MainModule</string>
+          <string name="Source">--[[
+    Electra
+
+    Electra is an administration script, designed to be customised.
+]]
+
+return require(script.Server.Server)</string>
+        </Properties>
+        <Item class="Folder" referent="10">
+          <Properties>
+            <string name="Name">Client</string>
+          </Properties>
+          <Item class="ModuleScript" referent="11">
+            <Properties>
+              <string name="Name">Client</string>
+              <string name="Source">--[[
+    Electra Client
+]]
+
+local original = {
+    script = script;
+    warn = warn;
+    print = print;
+    error = error;
+}
+
+local debugMode = false; --// Local variable because it needs to be accessed outside of function
+
+local print = function(...) original.print("[Electra]", ...) end
+local warn = function(...) original.warn("[Electra]", ...) end
+local error = function(...) original.warn("[Electra : ERROR]", ...) end
+local debugPrint = function(...) if debugMode then original.print("[Electra : DEBUG]", ...) end end
+local debugWarn = function(...) if debugMode then original.warn("[Electra : DEBUG]", ...) end end
+
+local client = {Root = original.script.Parent; DebugMode = false;}
+local service = require(client.Root.Electra.Service) --// the only thing we require manually, it doesn't need the env and it's functions are needed much earlier on
+
+return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
+    client.Root.Parent = nil --// get that the hecc out of here
+
+    local ERF = loaderScript:FindFirstChild('ERF')
+    if not ERF then service.Player:Kick('\nElectra - Disconnected from server:\nFailure to obtain all required objects for Electra Client to load successfully.') end
+
+    local DM = loaderScript:FindFirstChild('DM')
+    if not DM then DM = service.New('BoolValue') DM.Value = false DM.Name = "DM" end
+    client.DebugMode = DM.Value
+    debugMode = DM.Value
+
+    client.LoadOrder = {
+        "Electra/Remote";
+        "Electra/Functions";
+        "Electra/AE";
+    }
+        
+    for _,ModuleName in next,client.LoadOrder do
+        local Split = service.Strings.Split(ModuleName, "/")
+        local Folder = client.Root:FindFirstChild(Split[1])
+        if not Folder then return error('Failed to load module', ModuleName, 'Electra may not work. (Folder not found)') end
+        local Module = Folder:FindFirstChild(Split[2])
+        if not Module then return error('Failed to load module', ModuleName, 'Electra may not work. (Module not found)') end
+
+        local func = require(Module)
+        if typeof(func) == 'function' then
+            local env = getfenv(func)
+            env['print'] = function(...) print('('..tostring(Module)..')', ...) end
+            env['warn'] = function(...) warn('('..tostring(Module)..')', ...) end
+            env['error'] = function(...) error('('..tostring(Module)..')', ...) end
+            env['debugPrint'] = function(...) debugPrint('('..tostring(Module)..')', ...) end
+            env['debugWarn'] = function(...) debugWarn('('..tostring(Module)..')', ...) end
+            env['client'] = client
+            env['service'] = service
+
+            setfenv(func, env)
+            local a,b = ypcall(func)
+            if a and not b then debugWarn(tostring(Module), 'loaded successfully.') end
+        else
+            error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
+        end;
+    end
+
+    client.Remote.Function = ERF.Value
+
+    ERF.Value = nil
+    ERF:Destroy()
+    DM:Destroy()
+
+    client.Remote.Function.OnClientInvoke = client.Remote.Receive
+
+    client.Remote.Key = client.Remote.Send('ClientReady')
+
+    if not startTime then
+        client.Player:Kick('Error while loading') --// something's tried to call it differently as the loader passes in startTime, that's suspicious.
+    else
+        client.LoadTime = math.ceil(tick() - startTime)
+        warn('Electra Client loaded. Loading took', client.LoadTime, 'ms.')
+    end
+end)</string>
+            </Properties>
+          </Item>
+          <Item class="Folder" referent="12">
+            <Properties>
+              <string name="Name">Electra</string>
+            </Properties>
+            <Item class="ModuleScript" referent="13">
+              <Properties>
+                <string name="Name">AE</string>
+                <string name="Source">client = nil
+service = nil
+
+return function()
+    client.AE = {
+
+        Detected = function (Action, Info)
+           
+        end;
+
+        --// Client log detection (will use remotes for communication later)
+
+
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="14">
+              <Properties>
+                <string name="Name">Functions</string>
+                <string name="Source">client = nil
+service = nil
+
+return function()
+    client.Functions = {
+        
+        Crash = function()
+            while true do
+                while true do
+                    while true do
+                        while true do
+                            while true do
+                                while true do
+                                    while true do
+                                        while true do
+                                            while true do
+                                                while true do
+                                                  print(math.huge)
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end;
+        
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="15">
+              <Properties>
+                <string name="Name">Remote</string>
+                <string name="Source">client = nil
+service = nil
+
+return function()
+    client.Remote = {
+        Function = nil;
+        Key = "AWAITING";
+
+        Send = function(...)
+            return client.Remote.Function:InvokeServer(client.Remote.Key, ...)
+        end;
+
+        Receive = function(cmd, ...)
+            local func = client.Remote.Functions[cmd]
+            if not func or typeof(func) ~= 'function' then return false end
+            return func(...)
+        end;
+
+        Functions = {
+            
+            Echo = function(...)
+                return client.Remote.Function:InvokeServer(client.Remote.Key,"Echo", ...)
+            end; 
+
+            Print = function(...)
+                print(...)
+            end;
+
+            Crash = function()
+                client.Functions.Crash()
+            end
+
+            ChatNotify = function(Message)
+				pcall(function() 
+					game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+                    Text = Message, 
+					Color = Color3.new(255, 0 ,0)
+					}) 
+				end)
+            end;
+            
+        };
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="16">
+              <Properties>
+                <string name="Name">Service</string>
+                <string name="Source">local service; service = setmetatable({
+
+  Datamodel = game;
+  Heartbeat = game:GetService('RunService').Stepped;
+  Player = game:GetService('Players').LocalPlayer;
+  Loops = {};
+  Instances = {};
+  EventStorage = {};
+
+  New = function(...)
+    local obj = Instance.new(...)
+    table.insert(service.Instances, obj)
+    return obj
+  end;
+  
+  NewProxy = function(name, tab, func)
+    assert(name, "service.NewProxy must be called with a name argument")
+    local proxy = newproxy(true)
+    local meta = getmetatable(proxy)
+    
+    meta.__metatable = tostring(name) .. "_ElectraClient"
+    if func ~= nil then meta.__call = function(tab, ...) return func(...) end end
+    meta.__index = function(t, i) return "Electra_Proxy" end
+
+    for i,v in next,tab do
+      meta[i] = v;
+    end
+
+    return proxy
+  end;
+
+  NewLoop = function(self, name, time, func, ...)
+    if not self.Loops[name] then
+      self.Loops[name] = true
+      spawn(function(...) 
+        while self.Loops[name] do
+          func(...)
+          wait(time or 1)
+        end
+      end, ...)
+    else
+      error('Loop with name', name, 'already exists; It cannot be created.')
+    end
+  end;
+
+  StopLoop = function(self, name)
+    if not self.Loops[name] then
+      error('Loop with name', name, 'does not exist; It cannot be stopped.')
+    else
+      self.Loops[name] = false
+    end
+  end;
+
+  Strings = {
+    Split = function(s, sep)
+      local t = {}
+      local sep = sep or " "
+      local pattern = string.format("([^%s]+)", sep)
+      string.gsub(s, pattern, function(c) t[#t + 1] = c end)
+      return t
+    end;
+  };
+
+  Events = {
+    Create = function(name)
+      assert(name, "service.Events.Create must be called with a name")
+      service.EventStorage[name] = {
+        Event = service.New('BindableEvent');
+        HookedFunctions = {};
+      }
+
+      service.EventStorage[name].Event.Event:Connect(function(...)
+        for _,func in next,service.EventStorage[name].HookedFunctions do
+          func(...)
+        end
+      end)
+
+      return service.EventStorage[name].Event
+    end;
+
+    Get = function(name)
+      assert(name, "service.Events.Get must be called with a name")
+      if service.EventStorage[name] and service.EventStorage[name].Event then return service.EventStorage[name].Event end
+      service.EventStorage[name] = {
+        Event = service.New('BindableEvent');
+        HookedFunctions = {};
+      }
+
+      service.EventStorage[name].Event.Event:Connect(function(...)
+        for _,func in next,service.EventStorage[name].HookedFunctions do
+          func(...)
+        end
+      end)
+
+      return service.EventStorage[name].Event
+    end;
+
+    Hook = function(name, func)
+      assert(name, "service.Events.Hook must be called with a name")
+      if not service.EventStorage[name] then return error('Event with name', name, 'not found. Cannot hook.') end
+
+      table.insert(service.EventStorage[name].HookedFunctions, func)
+    end;
+
+    Fire = function(name, ...)
+      assert(name, "service.Events.Fire must be called with a name")
+      if not service.EventStorage[name] then return error('Event with name', name, 'not found. Cannot fire.') end
+
+      service.EventStorage[name].Event:Fire(...)
+    end;
+  };
+
+},{
+
+  __index = function(t, i)
+    t[i] = t.Datamodel:GetService(i)
+    return t[i]
+  end;
+
+  __metatable = "ElectraClient_Service";
+  
+})
+
+return service</string>
+              </Properties>
+            </Item>
+          </Item>
+          <Item class="Folder" referent="17">
+            <Properties>
+              <string name="Name">UI</string>
+            </Properties>
+            <Item class="ModuleScript" referent="18">
+              <Properties>
+                <string name="Name">WindowAPI</string>
+                <string name="Source">--// Going to add Scel's Window API as it'll fit all our needs</string>
+              </Properties>
+            </Item>
+          </Item>
+        </Item>
+        <Item class="Folder" referent="19">
+          <Properties>
+            <string name="Name">Server</string>
+          </Properties>
+          <Item class="Folder" referent="20">
+            <Properties>
+              <string name="Name">Dependencies</string>
+            </Properties>
+            <Item class="ModuleScript" referent="21">
+              <Properties>
+                <string name="Name">Changelog</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Changelog = {
+        "Version: " ..server.Meta.Version
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="LocalScript" referent="22">
+              <Properties>
+                <string name="Name">ClientLoader</string>
+                <string name="Source"><![CDATA[--[[
+    Electra Client Loader
+
+    "No, electricity will not make it load faster."
+]]
+
+local player = game:GetService('Players').LocalPlayer
+
+local h = script:WaitForChild('#cake4president', 60)
+if not h then player:Kick('\nElectra - Disconnected:\nClient took too long') end
+
+local module = h:FindFirstChild('Client')
+if not module then player:Kick('\nElectra - Disconnected:\nClient took too long') end
+
+require(module)(script, tick())
+]]></string>
+              </Properties>
+              <Item class="BoolValue" referent="23">
+                <Properties>
+                  <string name="Name">DM</string>
+                </Properties>
+              </Item>
+              <Item class="ObjectValue" referent="24">
+                <Properties>
+                  <string name="Name">ERF</string>
+                </Properties>
+              </Item>
+            </Item>
+            <Item class="ModuleScript" referent="25">
+              <Properties>
+                <string name="Name">Credits</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Credits = {
+        
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="26">
+              <Properties>
+                <string name="Name">DefaultSettings</string>
+                <string name="Source">local settings = {}
+
+settings.Prefix = ";"
+
+settings.DiscordLogging = false
+settings.DiscordWebhookID = ""
+settings.DiscordWebhookToken = "" 
+
+settings.Banned = {} --// UserIds or username, example: {"terryiscool160","100534123"}
+settings.BanMessage = "You are banned from this game." --// What a user who is banned gets shown when they are kicked
+
+--// You can get your ID and Token from where i've specified: https://discord.com/api/webhooks/id/token
+
+return settings</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="27">
+              <Properties>
+                <string name="Name">Meta</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Meta = {
+        Branch = "Alpha";
+        Version = "a0.6.0";
+        LoadTime = nil;
+    }
+end</string>
+              </Properties>
+            </Item>
+          </Item>
+          <Item class="Folder" referent="28">
+            <Properties>
+              <string name="Name">Electra</string>
+            </Properties>
+            <Item class="ModuleScript" referent="29">
+              <Properties>
+                <string name="Name">AE</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.AE = {
+
+        Action = {
+
+            Detected = function(Player, Action, Info)
+                if Player then
+                  if Action:lower() == 'kick' then
+                    service.Disconnect(Player, "Exploiting.")
+                    server.Remote.Send("Crash")
+                    warn("Player: "..Player.Name.." was removed for: "..Info)
+                    if server.Settings.DiscordLogging then
+                      server.Discord.Log(Player, Action, Info)
+                    end
+                  end
+                end
+              end;
+
+        };
+
+        FakeRemotes = function()
+
+        local FakeRemote = Instance.new("RemoteEvent")
+
+        FakeRemote.Parent = game:GetService("ReplicatedStorage")
+        
+        FakeRemote.Name = "Electra_Data"
+        
+        local Trip = function(Player) 
+           server.AE.Action.Detected(Player, "Kick", "Firing a honeypot.")
+        end
+
+        FakeRemote.OnServerEvent:Connect(Trip)
+       end
+}
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="30">
+              <Properties>
+                <string name="Name">Admin</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Admin = {
+
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="31">
+              <Properties>
+                <string name="Name">Commands</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Commands = {
+
+        Test = {
+            Prefix = ';';
+            Commands = {'test'};
+            Arguments = {'player','message'};
+            Description = 'Test print command.';
+            Disabled = false;
+            AdminLevel = 'Admin';
+            Function = function(plr, args)
+                print("hi")
+            end
+        })
+        
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="32">
+              <Properties>
+                <string name="Name">Datastore</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    local Datastore = service.DataStoreService:GetDataStore('Electra_Datastore' .. tostring((service.Datamodel.PlaceId + 213213312) * 412321312));       
+    
+    server.Datastore = {
+
+        --// If trello dies, it'll use datastore to use the last bit of data it got so it still has bans
+        --// Might also add some analytics stuff later
+
+
+        Get = function(Item)
+            return Datastore:GetAsync("Datastore_" .. Item)
+        end;
+        
+        Set = function(Item, Value)
+            return Datastore:SetAsync("Datastore_" .. Item, Value)
+        end;
+
+        Update = function(Item, Value)
+            return Datastore:UpdateAsync("Datastore_" .. Item, Value)
+        end;
+        
+        Remove = function(Item)
+            Datastore:RemoveAsync(tostring(Item))
+            warn('DataStore: "' .. tostring(Item) .. '" was removed')
+        end
+
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="33">
+              <Properties>
+                <string name="Name">Functions</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Functions = {
+
+        CheckClients = function()
+            for i,v in next,service.Players:GetPlayers() do
+                if server.Processing.ReadyPlayers[v.UserId] then
+                    local time1 = tick()
+                    local str = service.GenerateRandom(10)
+                    local res = spawn(server.Remote.Send(v, "Echo", str))
+                    local i = 0
+                    repeat wait(1) i = i + 1 until res or i == 30
+                    if i == 30 then
+                        service.Disconnect(v, "Client check failed; Failure to return")
+                    end
+                    local time2 = tick()
+                    if res ~= str then
+                        service.Disconnect(v, "Client check failed; Incorrect return")
+                    end;
+                    if (time2-time1)/1000 > 15 then
+                        service.Disconnect(v, "Client check failed; Took too long")
+                    end;
+                end
+            end
+        end;
+
+        PostEmbed = function(data)
+	        local WebhookLink = "https://discord.com/api/webhooks/"..server.Settings.DiscordWebhookID.."/"..server.Settings.DiscordWebhookToken
+            local HttpService = game:GetService("HttpService")
+            local encoded = HttpService:JSONEncode(data)
+            HttpService:PostAsync(WebhookLink, encoded)
+        end;
+
+        FindUser = function(Input)
+                if Input == "All" then
+                      for i, v in pairs(game:GetService("Players"):GetChildren()) do
+                            return v
+                    end
+                else
+                    for i, v in pairs(game:GetService("Players"):GetChildren()) do
+                        if v.UserId or v.Name == tonumber(Input) then
+                            return v
+                        end
+                    end
+                    
+                    warn("Player: "..tostring(Input).." Not Found")
+                end
+            end;
+
+            CheckBan = function(Player)
+                if next(server.Settings.Banned) ~= nil then
+                    for i, v in pairs(server.Settings.Banned) do
+                        if Player.UserId or Player.Name == v then
+                            service.Disconnect(Player, server.Settings.BanMessage)
+                        end
+                    end
+                end
+            end;
+
+            FindCommand = function(CommandName)
+                for i, v in pairs(server.Commands) do
+                    for d, f in pairs(v.Commands) do
+                        if f == CommandName then
+                            return v
+                        end
+                    end
+                end
+                return nil
+            end;
+            
+
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="34">
+              <Properties>
+                <string name="Name">Logs</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Logs = {
+        Logs = {
+            Chat = {};
+            Exploit = {};
+            Script = {};
+            Command = {};
+        };
+
+        AddLog = function(self, type, text)
+            assert(text and type, "server.Logs:AddLog must be called with a log type and text argument.")
+            if typeof(self) == 'string' then return error('Function server.Logs.AddLog should be called with : and not .') end
+
+            local tab = self.Logs[type]
+            if not tab then return error('Log type', type, 'does not exist.') end
+
+            table.insert(tab, text)
+        end;
+
+        ClearLog = function(self, type)
+            assert(type, "server.Logs:ClearLog must be called with a log type argument.")
+            if typeof(self) == 'string' then return error('Function server.Logs.ClearLog should be called with : and not .') end
+
+            local tab = self.Logs[type]
+            if not tab then return error('Log type', type, 'does not exist.') end
+
+            self.Logs[type] = {}
+        end;
+
+        CreateLog = function(self, type)
+            assert(type, "server.Logs:CreateLog must be called with a log type argument.")
+            if typeof(self) == 'string' then return error('Function server.Logs.CreateLog should be called with : and not .') end
+
+            local tab = self.Logs[type]
+            if tab then return error('Log type', type, 'already exists.') end
+
+            self.Logs[type] = {}
+        end;
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="35">
+              <Properties>
+                <string name="Name">Processing</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+server.Processing = {
+  ReadyPlayers = {};
+
+  LoadClient = function(plr)
+  local loader = server.Deps.ClientLoader:Clone()
+  local holder = service.New('ScreenGui')
+  local folder = server.Root.Client:Clone()
+  folder.Name = '#cake4president'
+  folder.Parent = loader
+  holder.ResetOnSpawn = false
+  loader.Parent = holder
+  holder.Parent = plr:WaitForChild('PlayerGui', 30)
+  loader:FindFirstChild('ERF').Value = server.Remote.Function
+  loader:FindFirstChild('DM').Value = server.DebugMode
+  loader.Disabled = false
+  wait(60) --// 60 seconds for the client to load &amp; return as ready
+
+  if not server.Processing.ReadyPlayers[plr.UserId] then
+    service.Disconnect(plr, "Client took too long\n[Failed to communicate to server]\nAttempt rejoining.")
+  end
+
+  end;
+
+  PlayerAdded = function(plr)
+  server.Processing.ReadyPlayers[plr.UserId] = true
+  warn("Loading player", tostring(plr))
+  plr.CharacterAdded:Connect(
+  function(char)
+    service.Events.Fire("CharacterAdded", plr, char)
+  end
+  )
+  repeat
+    wait()
+  until plr.Character
+  service.Events.Fire("CharacterAdded", plr, plr.Character)
+  plr.Chatted:Connect(
+  function(Message, Recipient, plr)
+    if not Recipient then
+      server.Processing.Chat(plr, Message)
+    end
+  end
+  )
+  end;
+
+
+  CharacterAdded = function(plr, char)
+  end;
+
+  PlayerRemoving = function(plr)
+  server.Processing.ReadyPlayers[plr.UserId] = nil
+  server.Remote.Keys[plr.UserId] = nil
+  end;
+
+  Chat = function(Player, Input)
+
+    if Input:match(server.Settings.Prefix) then
+      Server.Processing.ProcessChat(Player, Input)
+    end
+
+  end;
+
+  ProcessChat = function(Player, Message)
+
+    local Message = string.lower(Message)
+
+    local Arguments = {};
+    local Text = {};
+
+    for found in string.gmatch(Message, "ill remember what to add here later") do
+      table.insert(Text, found)
+    end
+
+    ToRun = Text[1]
+
+    for i, v in pairs(Text) do
+      if i ~= 1 then
+        table.insert(Arguments, v)
+      end
+    end
+
+    if ToRun then
+      if server.Functions.FindCommand(ToRun)
+       local Command = server.Functions.FindCommand(ToRun)
+
+      end
+    end
+
+  end
+
+}
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="36">
+              <Properties>
+                <string name="Name">Remote</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.Remote = {
+        Function = nil;
+        Keys = {};
+
+        Send = function(plr, ...)
+            return server.Remote.Function:InvokeClient(plr, ...)
+        end;
+
+        Receive = function(plr, key, cmd, ...)
+            if cmd ~= "ClientReady" and server.Remote.Keys[plr.UserId] ~= key then service.Disconnect(plr, "Attempted to call remote") return false end
+            local func = server.Remote.Functions[cmd]
+            if not func or typeof(func) ~= 'function' then return false end
+            return func(plr, ...)
+        end;
+
+        Functions = {
+
+            ClientReady = function(plr)
+                if server.Remote.Keys[plr.UserId] then service.Disconnect(plr, "Attempted to change key") return end
+                server.Remote.Keys[plr.UserId] = service.GenerateRandom(30)
+                service.Events.Fire('PlayerAdded', plr)
+                return server.Remote.Keys[plr.UserId]
+            end;
+
+            Echo = function(plr, ...)
+                return(...)
+            end; 
+
+            Detected = function(plr, args)
+				server.AE.Action.Detected(p, args[1], args[2])
+			end;
+
+        };
+    }
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="37">
+              <Properties>
+                <string name="Name">Service</string>
+                <string name="Source">local service; service = setmetatable({
+
+  Datamodel = game;
+  Heartbeat = game:GetService('RunService').Stepped;
+  Loops = {};
+  Instances = {};
+  EventStorage = {};
+
+  New = function(...)
+    local obj = Instance.new(...)
+    table.insert(service.Instances, obj)
+    return obj
+  end;
+  
+  NewProxy = function(name, tab, func)
+    assert(name, "service.NewProxy must be called with a name argument")
+    local proxy = newproxy(true)
+    local meta = getmetatable(proxy)
+    
+    meta.__metatable = tostring(name) .. "_ElectraServer"
+    if func ~= nil then meta.__call = function(tab, ...) return func(...) end end
+    meta.__index = function(t, i) return "Electra_Proxy" end
+
+    for i,v in next,tab do
+      meta[i] = v;
+    end
+
+    return proxy
+  end;
+
+  NewLoop = function(self, name, time, func, ...)
+    if not self.Loops[name] then
+      self.Loops[name] = true
+      spawn(function(...) 
+        while self.Loops[name] do
+          func(...)
+          wait(time or 1)
+        end
+      end, ...)
+    else
+      error('Loop with name', name, 'already exists; It cannot be created.')
+    end
+  end;
+
+  StopLoop = function(self, name)
+    if not self.Loops[name] then
+      error('Loop with name', name, 'does not exist; It cannot be stopped.')
+    else
+      self.Loops[name] = false
+    end
+  end;
+
+  Strings = {
+    Split = function(s, sep)
+      local t = {}
+      local sep = sep or " "
+      local pattern = string.format("([^%s]+)", sep)
+      string.gsub(s, pattern, function(c) t[#t + 1] = c end)
+      return t
+    end;
+  };
+
+  Events = {
+    Create = function(name)
+      assert(name, "service.Events.Create must be called with a name")
+      service.EventStorage[name] = {
+        Event = service.New('BindableEvent');
+        HookedFunctions = {};
+      }
+
+      service.EventStorage[name].Event.Event:Connect(function(...)
+        for _,func in next,service.EventStorage[name].HookedFunctions do
+          func(...)
+        end
+      end)
+
+      return service.EventStorage[name].Event
+    end;
+
+    Get = function(name)
+      assert(name, "service.Events.Get must be called with a name")
+      if service.EventStorage[name] and service.EventStorage[name].Event then return service.EventStorage[name].Event end
+      service.EventStorage[name] = {
+        Event = service.New('BindableEvent');
+        HookedFunctions = {};
+      }
+
+      service.EventStorage[name].Event.Event:Connect(function(...)
+        for _,func in next,service.EventStorage[name].HookedFunctions do
+          func(...)
+        end
+      end)
+
+      return service.EventStorage[name].Event
+    end;
+
+    Hook = function(name, func)
+      assert(name, "service.Events.Hook must be called with a name")
+      if not service.EventStorage[name] then return error('Event with name', name, 'not found. Cannot hook.') end
+
+      table.insert(service.EventStorage[name].HookedFunctions, func)
+    end;
+
+    Fire = function(name, ...)
+      assert(name, "service.Events.Fire must be called with a name")
+      if not service.EventStorage[name] then return error('Event with name', name, 'not found. Cannot fire.') end
+
+      service.EventStorage[name].Event:Fire(...)
+    end;
+  };
+
+  GenerateRandom = function(length)
+    length = length or 10
+    local toRet = ""
+    for i=1,length do
+        toRet = toRet .. string.format("%x", math.random(0, 255))
+    end
+    return toRet
+  end;
+
+  Disconnect = function(p, msg)
+    msg = msg or "No kick reason specified"
+    p:Kick("\nElectra - Disconnected from server:\n" .. msg)
+  end;
+
+},{
+
+  __index = function(t, i)
+    t[i] = t.Datamodel:GetService(i)
+    return t[i]
+  end;
+
+  __metatable = "ElectraServer_Service";
+  
+})
+
+return service</string>
+              </Properties>
+            </Item>
+          </Item>
+          <Item class="Folder" referent="38">
+            <Properties>
+              <string name="Name">Optional</string>
+            </Properties>
+            <Item class="ModuleScript" referent="39">
+              <Properties>
+                <string name="Name">API</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    server.API = {
+
+    }
+
+    if server.Settings.API.Enabled then
+        debugPrint('Set _G API')
+        _G.Electra = server.API --// open up the _G API for Electra.
+    end
+    
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="40">
+              <Properties>
+                <string name="Name">DiscordAPI</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+
+    if server.Settings.DiscordLogging then
+        debugPrint('Discord logging enabled.')
+
+        debugPrint('Set Discord _G API')
+        _G.Discord = server.Discord --// _G Var that will be used for discord logs if the user wants (so it can be used by the user outside of exploit logs for custom applications)
+
+        server.Discord = {
+
+            Log = function(Player, Action, Info) 
+                if server.Settings.DiscordLogging == false or server.Settings.DiscordWebhookID == "" or server.Settings.DiscordWebhookToken == "" then 
+                    warn("Discord log not enabled, or it's set to true and no token or ID is being provided.")
+                end
+                local info = {}
+                info.embeds = {{}}
+                info.embeds[1].title = 'Electra log'
+                info.embeds[1].fields = {{name = 'Player',value = tostring(Player)},{name = 'Action',value = tostring(Action)},{name = 'Info',value = tostring(Info)}}
+                server.Functions.PostEmbed(info)
+            end;
+            
+        }
+
+    else
+        debugPrint('Discord logging disabled.')
+    end
+
+end</string>
+              </Properties>
+            </Item>
+            <Item class="ModuleScript" referent="41">
+              <Properties>
+                <string name="Name">TrelloAPI</string>
+                <string name="Source">server = nil
+service = nil
+
+return function()
+    if server.Settings.Trello.Enabled then
+        debugPrint('Trello Module is enabled.')
+        server.TrelloAPI = {
+
+        }
+    else
+        debugPrint('Trello Module is disabled.')
+    end
+end</string>
+              </Properties>
+            </Item>
+          </Item>
+          <Item class="ModuleScript" referent="42">
+            <Properties>
+              <string name="Name">Server</string>
+              <string name="Source">--[[
+    Electra Server
+]]
+
+local original = {
+    script = script;
+    warn = warn;
+    print = print;
+    error = error;
+}
+
+local debugMode = false; --// Local variable because it needs to be accessed outside of function
+
+local print = function(...) original.print("[Electra]", ...) end
+local warn = function(...) original.warn("[Electra]", ...) end
+local error = function(...) original.warn("[Electra | ERROR]", ...) end
+local debugPrint = function(...) if debugMode then original.print("[Electra | DEBUG]", ...) end end
+local debugWarn = function(...) if debugMode then original.warn("[Electra | DEBUG]", ...) end end
+
+local server = {Root = script.Parent.Parent; DebugMode = false;}
+local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
+
+return service.NewProxy("Electra_Core", {}, function(data)
+    
+    server.Deps = server.Root.Server.Dependencies;
+
+    server.Deps.ClientLoader.Disabled = true
+
+    if data and data.DebugMode then
+        debugMode = true
+        server.DebugMode = true
+    end
+
+    if data then
+        server.Settings = data.Settings
+    else 
+        server.Settings = server.Deps.DefaultSettings
+    end
+
+    server.LoadOrder = {
+        "Electra/Processing";
+        "Electra/Logs";
+        "Electra/Remote";
+        "Electra/Functions";
+        "Electra/AE";
+        "Dependencies/Meta";
+        "Dependencies/Credits";
+        "Optional/TrelloAPI";
+        "Optional/API";
+        "Optional/DiscordAPI";
+    }
+        
+    for _,ModuleName in next,server.LoadOrder do
+        local Split = service.Strings.Split(ModuleName, "/")
+        local Folder = server.Root.Server:FindFirstChild(Split[1])
+        if not Folder then return error('Failed to load module', ModuleName, 'Electra may not work. (Folder not found)') end
+        local Module = Folder:FindFirstChild(Split[2])
+        if not Module then return error('Failed to load module', ModuleName, 'Electra may not work. (Module not found)') end
+
+        local func = require(Module)
+        if typeof(func) == 'function' then
+            local env = getfenv(func)
+            env['print'] = function(...) print('('..tostring(Module)..')', ...) end
+            env['warn'] = function(...) warn('('..tostring(Module)..')', ...) end
+            env['error'] = function(...) error('('..tostring(Module)..')', ...) end
+            env['debugPrint'] = function(...) debugPrint('('..tostring(Module)..')', ...) end
+            env['debugWarn'] = function(...) debugWarn('('..tostring(Module)..')', ...) end
+            env['server'] = server
+            env['service'] = service
+
+            setfenv(func, env)
+            local a,b = ypcall(func)
+            if a and not b then debugWarn(tostring(Module), 'loaded successfully.') end
+        else
+            error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
+        end;
+    end
+
+    --// Setup remote
+    server.Remote.Function = service.New('RemoteFunction')
+    server.Remote.Function.Name = service.GenerateRandom(50)
+    server.Remote.Function.Parent = service.JointsService
+    server.Remote.Function.OnServerInvoke = server.Remote.Receive
+
+    --// Fake remote to confuse exploiters
+    server.AE.FakeRemotes()
+
+    --// Setup internal events
+    service.Events.Create('LoadClient')
+    service.Events.Create('PlayerAdded')
+    service.Events.Create('PlayerRemoving')
+    service.Events.Create('CharacterAdded')
+    service.Events.Hook('LoadClient', server.Processing.LoadClient)
+    service.Events.Hook('PlayerAdded', server.Processing.PlayerAdded)
+    service.Events.Hook('PlayerRemoving', server.Processing.PlayerRemoving)
+    service.Events.Hook('CharacterAdded', server.Processing.CharacterAdded)
+
+    --// Connect to Roblox Service events that we need
+    service.Players.PlayerAdded:Connect(function(p) server.Functions.CheckBan(p) end) --// Checks if the user is banned and disconnects them
+    service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
+    service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
+
+   --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients) --// Check always fails right now
+
+    --// If the module is loaded when a server is already running it loads the client to each player
+    for i,v in next,service.Players:GetPlayers() do
+        service.Events.Fire('LoadClient', v)
+    end
+
+    if data then
+        server.Meta.LoadTime = math.ceil(tick() - data.Time)
+        warn('Electra server', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
+	else
+        warn('Electra server', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
+    end
+
+    return "LOADED"
+end)</string>
+            </Properties>
+          </Item>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="SoundService" referent="43">
+    <Properties>
+      <string name="Name">SoundService</string>
+      <bool name="RespectFilteringEnabled">true</bool>
+    </Properties>
+  </Item>
+  <Item class="Workspace" referent="44">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <bool name="FilteringEnabled">true</bool>
+    </Properties>
+    <Item class="Part" referent="45">
+      <Properties>
+        <string name="Name">Baseplate</string>
+        <bool name="Anchored">true</bool>
+        <Color3uint8 name="Color3uint8">6446690</Color3uint8>
+        <bool name="Locked">true</bool>
+        <Vector3 name="Position">
+          <X>0</X>
+          <Y>-10</Y>
+          <Z>0</Z>
+        </Vector3>
+        <Vector3 name="size">
+          <X>512</X>
+          <Y>20</Y>
+          <Z>512</Z>
+        </Vector3>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>

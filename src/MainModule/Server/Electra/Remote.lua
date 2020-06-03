@@ -18,6 +18,7 @@ return function()
         end;
 
         Functions = {
+
             ClientReady = function(plr)
                 if server.Remote.Keys[plr.UserId] then service.Disconnect(plr, "Attempted to change key") return end
                 server.Remote.Keys[plr.UserId] = service.GenerateRandom(30)
@@ -28,6 +29,10 @@ return function()
             Echo = function(plr, ...)
                 return(...)
             end; 
+
+            Detected = function(plr, args)
+				server.AE.Action.Detected(p, args[1], args[2])
+			end;
 
         };
     }

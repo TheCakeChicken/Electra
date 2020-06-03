@@ -57,7 +57,7 @@ return function()
                         end
                     end
                 end
-            end
+            end;
 
             FindCommand = function(CommandName)
                 for i, v in pairs(server.Commands) do

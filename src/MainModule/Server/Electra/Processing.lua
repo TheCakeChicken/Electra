@@ -56,9 +56,40 @@ server.Processing = {
   end;
 
   Chat = function(Player, Input)
-    Message = string.lower(Input)
-    
+
+    if Input:match(server.Settings.Prefix) then
+      Server.Processing.ProcessChat(Player, Input)
+    end
+
   end;
+
+  ProcessChat = function(Player, Message)
+
+    local Message = string.lower(Message)
+
+    local Arguments = {};
+    local Text = {};
+
+    for found in string.gmatch(Message, "ill remember what to add here later") do
+      table.insert(Text, found)
+    end
+
+    ToRun = Text[1]
+
+    for i, v in pairs(Text) do
+      if i ~= 1 then
+        table.insert(Arguments, v)
+      end
+    end
+
+    if ToRun then
+      if server.Functions.FindCommand(ToRun) then
+       local Command = server.Functions.FindCommand(ToRun)
+
+      end
+    end
+
+  end
 
 }
 end

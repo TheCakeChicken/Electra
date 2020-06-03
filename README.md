@@ -7,4 +7,4 @@ Be aware Electra is currently in it's alpha state. When it is done it will have 
 
 **More detailed documentation will come after release.**
 
-**I, Terryiscool160, am continuing Electra as it was not finished and no longer receives updates from the orginial owner.**
+**I, Terryiscool160, am continuing Electra as it was not finished and no longer receives updates from the original owner.**

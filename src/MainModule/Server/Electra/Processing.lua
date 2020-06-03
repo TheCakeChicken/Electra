@@ -58,7 +58,7 @@ server.Processing = {
   Chat = function(Player, Input)
 
     if Input:match(server.Settings.Prefix) then
-      Server.Processing.ProcessChat(Player, Input)
+      server.Processing.ProcessChat(Player, Input)
     end
 
   end;
@@ -69,6 +69,7 @@ server.Processing = {
 
     local Arguments = {};
     local Text = {};
+    local ToRun
 
     for found in string.gmatch(Message, "ill remember what to add here later") do
       table.insert(Text, found)
@@ -85,11 +86,23 @@ server.Processing = {
     if ToRun then
       if server.Functions.FindCommand(ToRun) then
        local Command = server.Functions.FindCommand(ToRun)
-
+         server.Processing.RunCommand(Player, ToRun, Arguments)
       end
     end
 
-  end
+  end;
+
+  RunCommand = function(Player, Command, Arguments)
+    local RanCommand = function()
+      Command.Function(Player, Arguments)
+    end
+    
+    local R, Err = pcall(RanCommand)
+    
+    if Err then
+        print("Error running the command: "..Err)
+    end
+  end;
 
 }
 end

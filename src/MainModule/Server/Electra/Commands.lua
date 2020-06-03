@@ -7,7 +7,7 @@ return function()
         Test = {
             Prefix = ';';
             Commands = {'test'};
-            Arguments = {'message'};
+            Arguments = {'player','message'};
             Description = 'Test print command.';
             Disabled = false;
             AdminLevel = 'Admin';

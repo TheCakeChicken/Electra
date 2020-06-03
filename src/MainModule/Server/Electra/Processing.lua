@@ -56,6 +56,8 @@ server.Processing = {
   end;
 
   Chat = function(Player, Input)
+    Message = string.lower(Input)
+    
   end;
 
 }

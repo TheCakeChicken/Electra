@@ -58,6 +58,17 @@ return function()
                     end
                 end
             end
+
+            FindCommand = function(CommandName)
+                for i, v in pairs(server.Commands) do
+                    for d, f in pairs(v.Commands) do
+                        if f == CommandName then
+                            return v
+                        end
+                    end
+                end
+                return nil
+            end;
             
 
     }

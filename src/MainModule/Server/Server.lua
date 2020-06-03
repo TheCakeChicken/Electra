@@ -102,10 +102,15 @@ return service.NewProxy("Electra_Core", {}, function(data)
 
    --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients) --// Check always fails right now
 
+    --// If the module is loaded when a server is already running it loads the client to each player
+    for i,v in next,service.Players:GetPlayers() do
+        service.Events.Fire('LoadClient', v)
+    end
+
     if data then
         server.Meta.LoadTime = math.ceil(tick() - data.Time)
         warn('Electra server', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
-    else
+	else
         warn('Electra server', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
     end
 

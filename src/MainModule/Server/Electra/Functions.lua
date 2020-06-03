@@ -3,12 +3,13 @@ service = nil
 
 return function()
     server.Functions = {
+
         CheckClients = function()
             for i,v in next,service.Players:GetPlayers() do
                 if server.Processing.ReadyPlayers[v.UserId] then
                     local time1 = tick()
                     local str = service.GenerateRandom(10)
-                    local res = spawn(server.Remote.Send, v, "Echo", str)
+                    local res = spawn(server.Remote.Send(v, "Echo", str))
                     local i = 0
                     repeat wait(1) i = i + 1 until res or i == 30
                     if i == 30 then

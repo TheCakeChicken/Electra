@@ -44,6 +44,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         "Electra/Functions";
         "Electra/AE";
         "Dependencies/Meta";
+        "Dependencies/Credits";
         "Optional/TrelloAPI";
         "Optional/API";
         "Optional/DiscordAPI";

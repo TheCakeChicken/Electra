@@ -6,7 +6,7 @@
 
 local player = game:GetService('Players').LocalPlayer
 
-local h = script:WaitForChild('#cake4president', 60)
+local h = script:WaitForChild('Electra_Client', 60)
 if not h then player:Kick('\nElectra - Disconnected:\nClient took too long') end
 
 local module = h:FindFirstChild('Client')

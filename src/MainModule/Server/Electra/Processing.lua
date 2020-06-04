@@ -93,6 +93,7 @@ server.Processing = {
   end;
 
   RunCommand = function(Player, Command, Arguments)
+
     local RanCommand = function()
       Command.Function(Player, Arguments)
     end
@@ -102,6 +103,7 @@ server.Processing = {
     if Err then
         print("Error running the command: "..Err)
     end
+    
   end;
 
 }

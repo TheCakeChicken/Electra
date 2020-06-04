@@ -71,7 +71,7 @@ server.Processing = {
     local Text = {};
     local ToRun
 
-    for found in string.gmatch(Message, "ill remember what to add here later") do
+    for found in string.gmatch(Message, "%w+") do
       table.insert(Text, found)
     end
 

@@ -6,15 +6,15 @@ return function()
 
         Test = {
             Prefix = ';';
-            Commands = {'test'};
-            Arguments = {'player','message'};
-            Description = 'Test print command.';
+            Name = {"test"};
+            Arguments = {"player","message"};
+            Description = "Test print command.";
             Disabled = false;
-            AdminLevel = 'Admin';
+            AdminLevel = "Admin";
             Function = function(plr, args)
                 print("hi")
             end
-        })
+        };
         
     }
 end

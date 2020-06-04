@@ -59,15 +59,15 @@ return function()
                 end
             end;
 
-            FindCommand = function(CommandName) --// Haven't tested yet
-                for i, v in pairs(server.Commands) do
-                    for d, f in pairs(v.Commands) do
-                        if f == CommandName then
+            FindCommand = function(Command) --// Haven't tested yet
+                for i, v in next(server.Commands) do
+                    for d, f in next(v.Name) do
+                        if f == Command then
                             return v
                         end
                     end
                 end
-                return nil
+                return "Not found."
             end;
             
 

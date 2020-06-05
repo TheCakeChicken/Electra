@@ -2,9 +2,9 @@ server = nil
 service = nil
 
 return function()
-    if server.Settings.Trello.Enabled then
+    if server.Settings.Trello then
         debugPrint('Trello Module is enabled.')
-        server.TrelloAPI = {
+        server.TrelloAPI = { 
 
         }
     else

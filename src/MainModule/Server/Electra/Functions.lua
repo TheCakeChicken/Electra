@@ -60,8 +60,8 @@ return function()
             end;
 
             FindCommand = function(Command) --// Haven't tested yet
-                for i, v in next(server.Commands) do
-                    for d, f in next(v.Name) do
+                for i, v in pairs(server.Commands) do
+                    for d, f in pairs(v.Name) do
                         if f == Command then
                             return v
                         end

@@ -85,8 +85,8 @@ server.Processing = {
 
     if ToRun then
       if server.Functions.FindCommand(ToRun) then
-       local Command = server.Functions.FindCommand(ToRun)
-         server.Processing.RunCommand(Player, ToRun, Arguments)
+         local Command = server.Functions.FindCommand(ToRun)
+         server.Processing.RunCommand(Player, Command, Arguments)
       end
     end
 

@@ -44,6 +44,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         "Electra/Logs";
         "Electra/Remote";
         "Electra/Functions";
+        "Electra/Commands";
         "Electra/AE";
         "Dependencies/Meta";
         "Dependencies/Credits";

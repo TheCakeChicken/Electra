@@ -59,7 +59,7 @@ return function()
                 end
             end;
 
-            FindCommand = function(Command) --// Haven't tested yet
+            FindCommand = function(Command)
                 for i, v in pairs(server.Commands) do
                     for d, f in pairs(v.Name) do
                         if f == Command then

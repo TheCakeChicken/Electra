@@ -37,6 +37,7 @@ server.Processing = {
     wait()
   until plr.Character
   service.Events.Fire("CharacterAdded", plr, plr.Character)
+  
   plr.Chatted:Connect(
   function(Message, Recipient, plr)
     if not Recipient then

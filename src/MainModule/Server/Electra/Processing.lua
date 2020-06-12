@@ -63,7 +63,7 @@ return function()
     ProcessChat = function(Player, Message)
 
       local Message = string.lower(Message)
-      
+
       if Message:sub(1, 2) == "/e" then
         Message = Message:sub(4)
       end
@@ -84,7 +84,7 @@ return function()
 
       if ToRun then
         local Command = server.Functions.FindCommand(ToRun)
-        if Command then
+        if Command and #Arguments >= #Command.Arguments then
           server.Processing.RunCommand(Player, Command, Arguments)
         else
           --//Add event callback to client

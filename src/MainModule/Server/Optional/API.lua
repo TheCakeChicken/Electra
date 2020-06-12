@@ -2,15 +2,22 @@ server = nil
 service = nil
 
 return function()
-    server.API = {
-     --// Ideas: 
-     --// API For checking a user is a admin
-     --// API For checking a user is a banned
-     --// API For getting trello data?
-     --// API For the datastore (only if enabled in settings)
-    }
+    server.API = setmetatable({
+        Name = 'Electra '..tostring(server.Meta.Version)..' interface API',
+    },
+    {
+        __newindex = function()
+            return 'This is locked'
+        end;
+        __tostring = function()
+            return 'Electra '..tostring(server.Meta.Version)..' interface API'
+        end;
+        __metatable = function()
+            return 'The Electra '..tostring(server.Meta.Version)..' interface API is locked, nice try'
+        end;
+    });
 
-    if server.Settings.API.Enabled then
+    if server.Settings.APIEnabled then
         debugPrint('Set _G API')
         _G.Electra = server.API --// open up the _G API for Electra.
     end

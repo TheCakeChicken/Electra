@@ -31,7 +31,7 @@ return function()
             end; 
 
             Detected = function(plr, args)
-				server.AE.Action.Detected(p, args[1], args[2])
+				server.AE.Action.Detected(plr, args[1], args[2])
 			end;
 
         };

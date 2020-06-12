@@ -70,9 +70,9 @@ return service.NewProxy("Electra_Core", {}, function(data)
             env['debugWarn'] = function(...) debugWarn('('..tostring(Module)..')', ...) end
             env['server'] = server
             env['service'] = service
-
+            
             setfenv(func, env)
-            local a,b = ypcall(func)
+            local a,b = pcall(func)
             if a and not b then debugWarn(tostring(Module), 'loaded successfully.') end
         else
             error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')

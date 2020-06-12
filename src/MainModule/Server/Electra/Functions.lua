@@ -67,7 +67,11 @@ return function()
                         end
                     end
                 end
-                return "Not found."
+                return nil
+            end;
+
+            CheckAdmin = function(Command)
+                
             end;
             
 

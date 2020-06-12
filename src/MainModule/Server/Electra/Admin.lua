@@ -4,7 +4,7 @@ service = nil
 return function()
     server.Admin = {
 
-        local AdminNames = {
+        local Levels = {
             ["-1"] = "Banned", 
             ["0"] = "Player", 
             ["1"] = "Moderator",

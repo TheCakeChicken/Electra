@@ -68,6 +68,10 @@ server.Processing = {
 
     local Message = string.lower(Message)
 
+    if Message:sub(1, 2) == "/e" then
+      Message = Message:sub(4)
+    end
+
     local Arguments = {};
     local Text = {};
     local ToRun

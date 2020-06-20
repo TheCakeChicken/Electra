@@ -85,9 +85,15 @@ server.Processing = {
 
     if ToRun then
       if server.Functions.FindCommand(ToRun) then
-         local Command = server.Functions.FindCommand(ToRun)
+        local Command = server.Functions.FindCommand(ToRun)
+        --//local PlayerLevel = server.Admin.GetAdminLevel(Player)
+        
+       --// if Command.AdminLevel >= PlayerLevel then
          server.Processing.RunCommand(Player, Command, Arguments)
-      end
+       --// else --// UI Function when
+          print("Player does not have the correct level.")
+       --// end
+    end
     end
 
   end;

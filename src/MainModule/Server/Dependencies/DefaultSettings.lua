@@ -2,6 +2,13 @@ local settings = {}
 
 settings.Prefix = ";"
 
+settings.Admins = {
+    {				
+        UserId = 100534123;
+        Level = 1
+    };
+}
+
 settings.DiscordLogging = false
 settings.DiscordWebhookID = ""
 settings.DiscordWebhookToken = "" 

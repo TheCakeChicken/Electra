@@ -10,7 +10,7 @@ return function()
             Arguments = {"player","message"};
             Description = "Test print command.";
             Disabled = false;
-            AdminLevel = "Admin";
+            AdminLevel = "Admin"; --// 0 = Player, 1 = Mod, 2 = Admin,
             Function = function(plr, args)
                 print("wow it works")
             end

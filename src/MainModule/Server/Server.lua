@@ -9,7 +9,7 @@ local original = {
     error = error;
 }
 
-local debugMode = false; --// Local variable because it needs to be accessed outside of function
+local debugMode = true; --// Local variable because it needs to be accessed outside of function
 
 local print = function(...) original.print("[Electra]", ...) end
 local warn = function(...) original.warn("[Electra]", ...) end
@@ -21,7 +21,6 @@ local server = {Root = script.Parent.Parent; DebugMode = false;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
 
 return service.NewProxy("Electra_Core", {}, function(data)
-
     --// Should add another run check here to see if Electra's already running
     
     server.Deps = server.Root.Server.Dependencies;
@@ -49,10 +48,9 @@ return service.NewProxy("Electra_Core", {}, function(data)
         "Dependencies/Meta";
         "Dependencies/Credits";
         "Optional/TrelloAPI";
-        "Optional/API";
+        (server.Settings.APIEnabled and "Optional/API" or nil);
         "Optional/DiscordAPI";
     }
-        
     for _,ModuleName in next,server.LoadOrder do
         local Split = service.Strings.Split(ModuleName, "/")
         local Folder = server.Root.Server:FindFirstChild(Split[1])
@@ -70,9 +68,9 @@ return service.NewProxy("Electra_Core", {}, function(data)
             env['debugWarn'] = function(...) debugWarn('('..tostring(Module)..')', ...) end
             env['server'] = server
             env['service'] = service
-
+            
             setfenv(func, env)
-            local a,b = ypcall(func)
+            local a,b = pcall(func)
             if a and not b then debugWarn(tostring(Module), 'loaded successfully.') end
         else
             error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')

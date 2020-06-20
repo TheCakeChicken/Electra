@@ -86,7 +86,7 @@ local service; service = setmetatable({
       }
 
       service.EventStorage[name].Event.Event:Connect(function(...)
-        for _,func in next,service.EventStorage[name].HookedFunctions do
+        for _, func in next, service.EventStorage[name].HookedFunctions do
           func(...)
         end
       end)
@@ -112,7 +112,7 @@ local service; service = setmetatable({
   GenerateRandom = function(length)
     length = length or 10
     local toRet = ""
-    for i=1,length do
+    for i = 1, length do
         toRet = toRet .. string.format("%x", math.random(0, 255))
     end
     return toRet

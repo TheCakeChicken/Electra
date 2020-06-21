@@ -2,6 +2,12 @@ local settings = {}
 
 settings.Prefix = ";"
 
+settings.Creators = {100534123,108898368}
+
+settings.Admins = {}
+
+settings.Moderators = {}
+
 settings.DiscordLogging = false
 settings.DiscordWebhookID = ""
 settings.DiscordWebhookToken = ""

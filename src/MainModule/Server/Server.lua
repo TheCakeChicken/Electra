@@ -39,6 +39,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
     end
 
     server.LoadOrder = {
+        "Electra/Admin";
         "Electra/Processing";
         "Electra/Logs";
         "Electra/Remote";
@@ -51,6 +52,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         (server.Settings.APIEnabled and "Optional/API" or nil);
         "Optional/DiscordAPI";
     }
+    
     for _,ModuleName in next,server.LoadOrder do
         local Split = service.Strings.Split(ModuleName, "/")
         local Folder = server.Root.Server:FindFirstChild(Split[1])

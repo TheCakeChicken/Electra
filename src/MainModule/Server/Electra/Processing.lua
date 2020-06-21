@@ -6,24 +6,24 @@ return function()
         ReadyPlayers = {};
 
         LoadClient = function(plr)
-          service.NewThread(function()
-            local loader = server.Deps.ClientLoader:Clone()
-            local holder = service.New('ScreenGui')
-            local folder = server.Root.Client:Clone()
-            folder.Name = 'Electra_Client'
-            folder.Parent = loader
-            holder.ResetOnSpawn = false
-            loader.Parent = holder
-            holder.Parent = plr:WaitForChild('PlayerGui', 30)
-            loader:FindFirstChild('ERF').Value = server.Remote.Function
-            loader:FindFirstChild('DM').Value = server.DebugMode
-            loader.Disabled = false
-            wait(60) --// 60 seconds for the client to load & return as ready
+            service.NewThread(function()
+                local loader = server.Deps.ClientLoader:Clone()
+                local holder = service.New('ScreenGui')
+                local folder = server.Root.Client:Clone()
+                folder.Name = 'Electra_Client'
+                folder.Parent = loader
+                holder.ResetOnSpawn = false
+                loader.Parent = holder
+                holder.Parent = plr:WaitForChild('PlayerGui', 30)
+                loader:FindFirstChild('ERF').Value = server.Remote.Function
+                loader:FindFirstChild('DM').Value = server.DebugMode
+                loader.Disabled = false
+                wait(60) --// 60 seconds for the client to load & return as ready
 
-            if not server.Processing.ReadyPlayers[plr.UserId] then
-                service.Disconnect(plr, "Client took too long\n[Failed to communicate to server]\nAttempt rejoining.")
-            end
-        end)
+                if not server.Processing.ReadyPlayers[plr.UserId] then
+                    service.Disconnect(plr, "Client took too long\n[Failed to communicate to server]\nAttempt rejoining.")
+                end
+            end)
         end;
 
         PlayerAdded = function(plr)
@@ -36,7 +36,7 @@ return function()
             repeat wait() until plr.Character
             service.Events.Fire("CharacterAdded", plr, plr.Character)
 
-            plr.Chatted:Connect(function(Message, Recipient, plr)
+            plr.Chatted:Connect(function(Message, Recipient)
                 if not Recipient then
                     server.Processing.Chat(plr, Message)
                 end
@@ -85,17 +85,17 @@ return function()
 
             if ToRun then
                 local Command = server.Functions.FindCommand(ToRun)
-                --//local PlayerLevel = server.Admin.GetAdminLevel(Player)
+                local PermissionToRunCommand = server.Admin.CanRunCommand(Player, Command)
 
-                --//if Command.AdminLevel >= PlayerLevel then
+                if PermissionToRunCommand then
                     if Command and #Arguments >= #Command.Arguments then
                         server.Processing.RunCommand(Player, Command, Arguments)
                     else
-                    --//Add event callback to client
+                        print("Not enough arguments for this command!")
                     end;
-                --//else
-                --// Not high enough level
-                --//end
+                else
+                    print("Not a high enough level for this command!")
+                end
 
             end
 

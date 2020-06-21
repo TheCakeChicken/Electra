@@ -16,7 +16,7 @@ return function()
 
         GetAdminLevel = function(Player)
             for i, v in pairs(server.Settings.Creators) do
-                if Player.UserId == v then
+                if Player.UserId or Player.Name == v then
                     return 3
                 end
             end

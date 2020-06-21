@@ -123,6 +123,11 @@ local service; service = setmetatable({
     p:Kick("\nElectra - Disconnected from server:\n" .. msg)
   end;
 
+  NewThread = function(Function, ...)
+    local Arguments = table.pack(...)
+    return coroutine.resume(coroutine.create(function() Function(table.unpack(Arguments)) end))
+  end;
+
 },{
 
   __index = function(t, i)

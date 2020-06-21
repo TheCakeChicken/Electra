@@ -6,6 +6,7 @@ return function()
         ReadyPlayers = {};
 
         LoadClient = function(plr)
+          service.NewThread(function()
             local loader = server.Deps.ClientLoader:Clone()
             local holder = service.New('ScreenGui')
             local folder = server.Root.Client:Clone()
@@ -22,6 +23,7 @@ return function()
             if not server.Processing.ReadyPlayers[plr.UserId] then
                 service.Disconnect(plr, "Client took too long\n[Failed to communicate to server]\nAttempt rejoining.")
             end
+        end)
         end;
 
         PlayerAdded = function(plr)

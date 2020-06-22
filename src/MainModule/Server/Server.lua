@@ -106,7 +106,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
     service.Players.PlayerAdded:Connect(function(p) service.Events.Fire('LoadClient', p) end)
     service.Players.PlayerRemoving:Connect(function(p) service.Events.Fire('PlayerRemoving', p) end)
 
-   --// service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients) --// Check always fails right now
+    service:NewLoop("Electra_ClientCheck", 15, server.Functions.CheckClients)
 
     --// If the module is loaded when a server is already running it loads the client to each player
     for i,v in next,service.Players:GetPlayers() do

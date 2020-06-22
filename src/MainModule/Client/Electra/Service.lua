@@ -121,12 +121,12 @@ end;
       service.EventStorage[name].Event:Fire(...)
     end;
 
-    NewThread = function(Function, ...)
-      local Arguments = table.pack(...)
-      return coroutine.resume(coroutine.create(function() Function(table.unpack(Arguments)) end))
-    end;
-
   };
+
+  NewThread = function(Function, ...)
+    local Arguments = table.pack(...)
+    return coroutine.resume(coroutine.create(function() Function(table.unpack(Arguments)) end))
+  end;
 
 },{
 

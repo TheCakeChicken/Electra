@@ -5,25 +5,30 @@ return function()
     server.Functions = {
 
         CheckClients = function()
+          service.NewThread(function()
             for i,v in next,service.Players:GetPlayers() do
                 if server.Processing.ReadyPlayers[v.UserId] then
                     local time1 = tick()
                     local str = service.GenerateRandom(10)
-                    local res = spawn(server.Remote.Send(v, "Echo", str))
+                    local res = server.Remote.Send(v, "Echo", str)
                     local i = 0
                     repeat wait(1) i = i + 1 until res or i == 30
                     if i == 30 then
                         service.Disconnect(v, "Client check failed; Failure to return")
+                        print("Player: ".. v.Name .." failed the client check (Failed to return)")
                     end
                     local time2 = tick()
                     if res ~= str then
                         service.Disconnect(v, "Client check failed; Incorrect return")
+                        print("Player: ".. v.Name .." failed the client check (Incorrect return)")
                     end;
-                    if (time2-time1)/1000 > 15 then
+                    if (time2-time1)/1000 > 5 then
                         service.Disconnect(v, "Client check failed; Took too long")
+                        print("Player: ".. v.Name .." failed the client check (>5 minutes)")
                     end;
                 end
             end
+        end)
         end;
 
         PostEmbed = function(data)

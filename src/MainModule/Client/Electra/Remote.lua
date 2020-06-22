@@ -19,7 +19,7 @@ return function()
         Functions = {
             
             Echo = function(...)
-                return client.Remote.Function:InvokeServer(client.Remote.Key,"Echo", ...)
+                return client.Remote.Send("Echo", ...)
             end; 
 
             Print = function(...)

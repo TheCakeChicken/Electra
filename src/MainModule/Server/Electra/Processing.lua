@@ -104,7 +104,9 @@ return function()
         RunCommand = function(Player, Command, Arguments)
 
             local RanCommand = function()
+              service.NewThread(function()
                 Command.Function(Player, Arguments)
+              end)
             end;
 
             xpcall(RanCommand, function(Err)

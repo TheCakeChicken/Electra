@@ -6,13 +6,15 @@ return function()
 
         Test = {
             Prefix = ';';
-            Name = {"test", "testing"};
-            Arguments = {"player", "message"};
+            Name = {"test"};
+            Arguments = {};
             Description = "Test print command.";
             Disabled = false;
             AdminLevel = "Admin"; --// 0 = Player, 1 = Mod, 2 = Admin,
-            Function = function(plr, args)
-                print("wow it works")
+			Function = function(plr, args)
+	
+			server.Remote.Send(plr, "MakeGUI", "List", { Title = "Electra"; } );
+				
             end
         };
         

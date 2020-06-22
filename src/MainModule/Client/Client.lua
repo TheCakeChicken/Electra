@@ -34,9 +34,11 @@ return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
     client.LoadOrder = {
         "Electra/Remote";
         "Electra/Functions";
+        "Electra/UI";
         "Electra/AE";
     }
-        
+
+    service.NewThread(function()    
     for _,ModuleName in next,client.LoadOrder do
         local Split = service.Strings.Split(ModuleName, "/")
         local Folder = client.Root:FindFirstChild(Split[1])
@@ -62,6 +64,7 @@ return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
             error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
         end;
     end
+    end)
 
     client.Remote.Function = ERF.Value
 
@@ -79,4 +82,13 @@ return service.NewProxy("Electra_Client", {}, function(loaderScript, startTime)
         client.LoadTime = math.ceil(tick() - startTime)
         warn('Electra Client loaded. Loading took', client.LoadTime, 'ms.')
     end
+    
+    pcall(function()
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Electra loaded!"; 
+        Text = "Electra loaded successfully! (Dev only notification).";
+        Icon = "";
+        Duration = 5; 
+    })
+    end)
 end)

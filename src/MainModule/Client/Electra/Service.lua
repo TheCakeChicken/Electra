@@ -61,6 +61,18 @@ local service; service = setmetatable({
     end;
   };
 
+  LoadCustomModule = function(module, custEnv, ...)
+	return setfenv(require(module), setmetatable(custEnv or {script = module},{
+		__index = function(self, ind)
+			return getfenv()[ind]
+		end;
+		
+		__newindex = function(self, ind, val)
+			getfenv()[ind] = val
+		end;
+	}))(...)
+end;
+
   Events = {
     Create = function(name)
       assert(name, "service.Events.Create must be called with a name")
@@ -108,6 +120,12 @@ local service; service = setmetatable({
 
       service.EventStorage[name].Event:Fire(...)
     end;
+
+    NewThread = function(Function, ...)
+      local Arguments = table.pack(...)
+      return coroutine.resume(coroutine.create(function() Function(table.unpack(Arguments)) end))
+    end;
+
   };
 
 },{

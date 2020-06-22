@@ -52,7 +52,8 @@ return service.NewProxy("Electra_Core", {}, function(data)
         (server.Settings.APIEnabled and "Optional/API" or nil);
         "Optional/DiscordAPI";
     }
-    
+
+    service.NewThread(function()
     for _,ModuleName in next,server.LoadOrder do
         local Split = service.Strings.Split(ModuleName, "/")
         local Folder = server.Root.Server:FindFirstChild(Split[1])
@@ -60,6 +61,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
         local Module = Folder:FindFirstChild(Split[2])
         if not Module then return error('Failed to load module', ModuleName, 'Electra may not work. (Module not found)') end
 
+        
         local func = require(Module)
         if typeof(func) == 'function' then
             local env = getfenv(func)
@@ -78,6 +80,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
             error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
         end;
     end
+    end)
 
     --// Setup remote
     server.Remote.Function = service.New('RemoteFunction')

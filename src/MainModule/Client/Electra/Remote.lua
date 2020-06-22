@@ -10,10 +10,10 @@ return function()
             return client.Remote.Function:InvokeServer(client.Remote.Key, ...)
         end;
 
-        Receive = function(cmd, ...)
-            local func = client.Remote.Functions[cmd]
-            if not func or typeof(func) ~= 'function' then return false end
-            return func(...)
+		Receive = function(cmd, ...)
+            local torun = client.Remote.Functions[cmd]
+            if not torun or typeof(torun) ~= 'function' then return false end
+            return torun(...)
         end;
 
         Functions = {
@@ -27,7 +27,11 @@ return function()
             end;
 
             Crash = function()
-                client.Functions.Crash()
+              return client.Functions.Crash()
+            end;
+
+			MakeGUI = function(Arguments)
+              return client.UI.MakeGUI(Arguments, Arguments[1])
             end;
 
             ChatNotify = function(Message)

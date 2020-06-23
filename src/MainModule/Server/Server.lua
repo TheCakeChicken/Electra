@@ -21,7 +21,14 @@ local server = {Root = script.Parent.Parent; DebugMode = false;}
 local service = require(server.Root.Server.Electra.Service) --// the only file we will ever, ever manually require; it's functions are needed before the main modules are loaded.
 
 return service.NewProxy("Electra_Core", {}, function(data)
-    --// Should add another run check here to see if Electra's already running
+
+    if _G["_Electra_Running"] == true then
+      warn("Electra is already running on this server! Aborted load.")
+	  server.Root:Destroy();
+	  return "ALREADY_RUNNING"
+    else
+      _G["_Electra_Running"] = true
+    end
 
     server.Deps = server.Root.Server.Dependencies;
 

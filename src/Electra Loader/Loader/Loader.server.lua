@@ -1,10 +1,9 @@
 --// You don't need to touch anything under here unless you're changing the module path
 
-if _G["_Electra"] then
-	warn("Electra already running!")
+if _G["_Electra_Running"] == true then
+	warn("Electra is already running on this server!")
 	script:Destroy()
 else
-	_G["_Electra"] = "Running"
 	
 	local module = game.ServerScriptService.MainModule
 	local settings = require(script.Parent.Parent.Config.Settings)

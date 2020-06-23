@@ -10,7 +10,7 @@ return function()
                 local GUI = GUIModule:Clone()
                 local code = (GUI:IsA("ModuleScript") and GUI) or GUI:FindFirstChild("CodeModule")
                 if code then
-                    return service.LoadCustomModule(code, nil, Data)
+                    return service.LoadCustomModule(code, {script = code, client = client}, Data)
                 end
             end
         end

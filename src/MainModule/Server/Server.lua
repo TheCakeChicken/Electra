@@ -22,7 +22,7 @@ local service = require(server.Root.Server.Electra.Service) --// the only file w
 
 return service.NewProxy("Electra_Core", {}, function(data)
     --// Should add another run check here to see if Electra's already running
-    
+
     server.Deps = server.Root.Server.Dependencies;
 
     server.Deps.ClientLoader.Disabled = true
@@ -34,7 +34,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
 
     if data then
         server.Settings = data.Settings
-    else 
+    else
         server.Settings = server.Deps.DefaultSettings
     end
 
@@ -54,33 +54,38 @@ return service.NewProxy("Electra_Core", {}, function(data)
     }
 
     service.NewThread(function()
-    for _,ModuleName in next,server.LoadOrder do
-        local Split = service.Strings.Split(ModuleName, "/")
-        local Folder = server.Root.Server:FindFirstChild(Split[1])
-        if not Folder then return error('Failed to load module', ModuleName, 'Electra may not work. (Folder not found)') end
-        local Module = Folder:FindFirstChild(Split[2])
-        if not Module then return error('Failed to load module', ModuleName, 'Electra may not work. (Module not found)') end
+        for _,ModuleName in next,server.LoadOrder do
+            local Split = service.Strings.Split(ModuleName, "/")
+            local Folder = server.Root.Server:FindFirstChild(Split[1])
+            if not Folder then return error('Failed to load module', ModuleName, 'Electra may not work. (Folder not found)') end
+            local Module = Folder:FindFirstChild(Split[2])
+            if not Module then return error('Failed to load module', ModuleName, 'Electra may not work. (Module not found)') end
 
-        
-        local func = require(Module)
-        if typeof(func) == 'function' then
-            local env = getfenv(func)
-            env['print'] = function(...) print('('..tostring(Module)..')', ...) end
-            env['warn'] = function(...) warn('('..tostring(Module)..')', ...) end
-            env['error'] = function(...) error('('..tostring(Module)..')', ...) end
-            env['debugPrint'] = function(...) debugPrint('('..tostring(Module)..')', ...) end
-            env['debugWarn'] = function(...) debugWarn('('..tostring(Module)..')', ...) end
-            env['server'] = server
-            env['service'] = service
-            
-            setfenv(func, env)
-            local a,b = pcall(func)
-            if a and not b then debugWarn(tostring(Module), 'loaded successfully.') end
-        else
-            error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
-        end;
-    end
+
+            local func = require(Module)
+            if typeof(func) == 'function' then
+                local env = getfenv(func)
+                env['print'] = function(...) print('('..tostring(Module)..')', ...) end
+                env['warn'] = function(...) warn('('..tostring(Module)..')', ...) end
+                env['error'] = function(...) error('('..tostring(Module)..')', ...) end
+                env['debugPrint'] = function(...) debugPrint('('..tostring(Module)..')', ...) end
+                env['debugWarn'] = function(...) debugWarn('('..tostring(Module)..')', ...) end
+                env['server'] = server
+                env['service'] = service
+
+                setfenv(func, env)
+                local a,b = pcall(func)
+                if a and not b then debugWarn(tostring(Module), 'loaded successfully.') end
+            else
+                error('Failed to load module', tostring(Module), 'Electra may not work. (Did not return function)')
+            end;
+        end
     end)
+
+    --// Get Electra's version
+    if server.Settings.GetVersionNumberFromHTTP then
+        server.Meta.GetMeta();
+    end
 
     --// Setup remote
     server.Remote.Function = service.New('RemoteFunction')
@@ -115,10 +120,12 @@ return service.NewProxy("Electra_Core", {}, function(data)
 
     if data then
         server.Meta.LoadTime = math.ceil(tick() - data.Time)
-        warn('Electra server', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
-	else
-        warn('Electra server', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
+        warn('Electra server version', server.Meta.Version, 'loaded. Loading took', tostring(server.Meta.LoadTime), 'ms.')
+    else
+        warn('Electra server version', server.Meta.Version, 'loaded. Electra loaded without data, forced to use default data!')
     end
+
+
 
     return "LOADED"
 end)

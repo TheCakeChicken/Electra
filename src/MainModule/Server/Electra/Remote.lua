@@ -6,11 +6,12 @@ return function()
         Function = nil;
         Keys = {};
 
-        Send = function(plr, ...)
-            return server.Remote.Function:InvokeClient(plr, ...)
+        Send = function(Player, ...)
+            return server.Remote.Function:InvokeClient(Player, ...)
         end;
 
         Receive = function(plr, key, cmd, ...)
+            if not plr then return end
             if cmd ~= "ClientReady" and server.Remote.Keys[plr.UserId] ~= key then service.Disconnect(plr, "Attempted to call remote") return false end
             local func = server.Remote.Functions[cmd]
             if not func or typeof(func) ~= 'function' then return false end

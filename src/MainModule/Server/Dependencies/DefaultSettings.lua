@@ -12,6 +12,8 @@ settings.DiscordLogging = false
 settings.DiscordWebhookID = ""
 settings.DiscordWebhookToken = ""
 
+settings.GetVersionNumberFromHTTP = true;
+
 settings.Trello = false
 settings.TrelloAPIKey = ""
 settings.TrelloAPIToken = ""

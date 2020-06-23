@@ -87,14 +87,18 @@ return function()
                 local Command = server.Functions.FindCommand(ToRun)
                 local PermissionToRunCommand = server.Admin.CanRunCommand(Player, Command)
 
-                if PermissionToRunCommand then
-                    if Command and #Arguments >= #Command.Arguments then
-                        server.Processing.RunCommand(Player, Command, Arguments)
+                if Command then
+                    if PermissionToRunCommand then
+                        if #Arguments >= #Command.Arguments then
+                            server.Processing.RunCommand(Player, Command, Arguments)
+                        else
+                            print("Not enough arguments for this command!")
+                        end;
                     else
-                        print("Not enough arguments for this command!")
-                    end;
+                        print("Not a high enough level for this command!")
+                    end
                 else
-                    print("Not a high enough level for this command!")
+                    print("Command does not exist!")
                 end
 
             end
@@ -104,9 +108,7 @@ return function()
         RunCommand = function(Player, Command, Arguments)
 
             local RanCommand = function()
-              service.NewThread(function()
                 Command.Function(Player, Arguments)
-              end)
             end;
 
             xpcall(RanCommand, function(Err)

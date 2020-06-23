@@ -35,7 +35,7 @@ return service.NewProxy("Electra_Core", {}, function(data)
     if data then
         server.Settings = data.Settings
     else
-        server.Settings = server.Deps.DefaultSettings
+        server.Settings = require(server.Deps.DefaultSettings)
     end
 
     server.LoadOrder = {
